@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Endpoint de ejemplo - apunta al backend service
+  La URL se resuelve desde deployment.toml via system properties
+-->
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="SampleBackendEP">
+    <http method="GET"
+          uri-template="{uri.var.backend.url}/api/v1{+uri.var.path}">
+        <timeout>
+            <duration>30000</duration>
+            <responseAction>fault</responseAction>
+        </timeout>
+        <suspendOnFailure>
+            <initialDuration>1000</initialDuration>
+            <progressionFactor>2</progressionFactor>
+            <maximumDuration>60000</maximumDuration>
+            <errorCodes>101503,101504,101505</errorCodes>
+        </suspendOnFailure>
+        <markForSuspension>
+            <retriesBeforeSuspension>3</retriesBeforeSuspension>
+            <retryDelay>1000</retryDelay>
+            <errorCodes>101503,101504,101505</errorCodes>
+        </markForSuspension>
+    </http>
+</endpoint>

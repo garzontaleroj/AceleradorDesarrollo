@@ -1,0 +1,104 @@
+# =============================================================================
+# Docker Compose — Desarrollo local de todos los productos WSO2
+# =============================================================================
+version: "3.9"
+
+services:
+  # ---------------------------------------------------------------------------
+  # API Manager
+  # ---------------------------------------------------------------------------
+  api-manager:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/api-manager/Dockerfile
+      args:
+        ENVIRONMENT: dev
+    ports:
+      - "9443:9443"     # Management Console
+      - "8243:8243"     # Gateway HTTPS
+      - "8280:8280"     # Gateway HTTP
+    volumes:
+      - apim-data:/home/wso2carbon/wso2am-4.3.0/repository/data
+    networks:
+      - wso2-network
+    depends_on:
+      - identity-server
+    healthcheck:
+      test: ["CMD", "curl", "-sSk", "https://localhost:9443/services/Version"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  # ---------------------------------------------------------------------------
+  # Micro Integrator
+  # ---------------------------------------------------------------------------
+  micro-integrator:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/micro-integrator/Dockerfile
+      args:
+        ENVIRONMENT: dev
+    ports:
+      - "8290:8290"     # HTTP
+      - "8253:8253"     # HTTPS
+      - "9164:9164"     # Management API
+    networks:
+      - wso2-network
+    healthcheck:
+      test: ["CMD", "curl", "-sSk", "https://localhost:9164/management/apis"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+  # ---------------------------------------------------------------------------
+  # Identity Server
+  # ---------------------------------------------------------------------------
+  identity-server:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/identity-server/Dockerfile
+      args:
+        ENVIRONMENT: dev
+    ports:
+      - "9444:9443"     # Management Console (diferente puerto host)
+    volumes:
+      - is-data:/home/wso2carbon/wso2is-7.0.0/repository/data
+    networks:
+      - wso2-network
+    healthcheck:
+      test: ["CMD", "curl", "-sSk", "https://localhost:9443/carbon/admin/login.jsp"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  # ---------------------------------------------------------------------------
+  # Streaming Integrator
+  # ---------------------------------------------------------------------------
+  streaming-integrator:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/streaming-integrator/Dockerfile
+      args:
+        ENVIRONMENT: dev
+    ports:
+      - "9445:9443"     # Management Console
+      - "9090:9090"     # HTTP
+    networks:
+      - wso2-network
+    healthcheck:
+      test: ["CMD", "curl", "-sSk", "https://localhost:9443/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+volumes:
+  apim-data:
+  is-data:
+
+networks:
+  wso2-network:
+    driver: bridge

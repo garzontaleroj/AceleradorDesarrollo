@@ -1,0 +1,37 @@
+# =============================================================================
+# WSO2 Streaming Integrator — deployment.toml (DEV)
+# =============================================================================
+
+[server]
+hostname = "si.dev.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 9090
+
+[transport.https]
+listener.port = 9443
+
+[databridge.config]
+data.agent.config.queue.size = 32768
+data.agent.config.batch.size = 200
+data.agent.config.core.pool.size = 1
+data.agent.config.max.pool.size = 1
+
+[siddhi.stores]
+type = "in-memory"
+
+[coordination]
+enabled = false
+
+[logging]
+level = "DEBUG"
+
+# Extensiones Siddhi
+[siddhi.extensions]
+extension.1.name = "http"
+extension.1.namespace = "source"
+extension.2.name = "http"
+extension.2.namespace = "sink"
+extension.3.name = "log"
+extension.3.namespace = "sink"

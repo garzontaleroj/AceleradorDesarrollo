@@ -1,0 +1,34 @@
+# Kustomize overlay — STAGING
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: wso2-staging
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+commonLabels:
+  environment: staging
+
+patches:
+  - target:
+      kind: Deployment
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 2
+
+images:
+  - name: wso2-api-manager
+    newName: ghcr.io/ticxar/wso2-api-manager
+    newTag: staging-latest
+  - name: wso2-micro-integrator
+    newName: ghcr.io/ticxar/wso2-micro-integrator
+    newTag: staging-latest
+  - name: wso2-identity-server
+    newName: ghcr.io/ticxar/wso2-identity-server
+    newTag: staging-latest
+  - name: wso2-streaming-integrator
+    newName: ghcr.io/ticxar/wso2-streaming-integrator
+    newTag: staging-latest

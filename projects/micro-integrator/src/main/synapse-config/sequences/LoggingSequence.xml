@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Secuencia de logging estándar — se invoca como secuencia de entrada
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="LoggingSequence">
+
+    <log level="custom">
+        <property name="CORRELATION_ID" expression="get-property('MessageID')"/>
+        <property name="HTTP_METHOD" expression="$axis2:HTTP_METHOD"/>
+        <property name="RESOURCE" expression="$axis2:REST_URL_POSTFIX"/>
+        <property name="CONTENT_TYPE" expression="$trp:Content-Type"/>
+        <property name="TIMESTAMP" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+    </log>
+
+</sequence>

@@ -1,0 +1,32 @@
+# CODEOWNERS — Asignar reviewers automáticamente por área
+# Documentación: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners
+* @ticxar/wso2-leads
+
+# API Manager
+projects/api-manager/ @ticxar/apim-team
+config/**/apim/ @ticxar/apim-team
+
+# Micro Integrator
+projects/micro-integrator/ @ticxar/mi-team
+config/**/mi/ @ticxar/mi-team
+
+# Identity Server
+projects/identity-server/ @ticxar/is-team
+config/**/is/ @ticxar/is-team
+
+# Streaming Integrator
+projects/streaming-integrator/ @ticxar/si-team
+config/**/si/ @ticxar/si-team
+
+# Ballerina
+projects/ballerina/ @ticxar/ballerina-team
+
+# Infrastructure
+infrastructure/ @ticxar/devops-team
+.github/workflows/ @ticxar/devops-team
+
+# Config de ambientes productivos requiere revisión adicional
+config/staging/ @ticxar/wso2-leads @ticxar/devops-team
+config/prod/ @ticxar/wso2-leads @ticxar/devops-team

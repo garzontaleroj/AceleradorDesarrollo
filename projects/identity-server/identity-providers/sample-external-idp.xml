@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Identity Provider de ejemplo — Federado con un IdP externo
+  Exportado/importable via Management Console o API
+-->
+<IdentityProvider>
+    <IdentityProviderName>SampleExternalIdP</IdentityProviderName>
+    <IdentityProviderDescription>IdP externo de ejemplo para SSO</IdentityProviderDescription>
+    <Alias>https://idp.example.com</Alias>
+    <IsPrimary>false</IsPrimary>
+    <IsEnabled>true</IsEnabled>
+    <IsFederationHub>false</IsFederationHub>
+
+    <FederatedAuthenticatorConfigs>
+        <FederatedAuthenticatorConfig>
+            <Name>OpenIDConnectAuthenticator</Name>
+            <IsEnabled>true</IsEnabled>
+            <Properties>
+                <Property>
+                    <Name>ClientId</Name>
+                    <Value>__PLACEHOLDER_CLIENT_ID__</Value>
+                </Property>
+                <Property>
+                    <Name>OAuth2AuthzEPUrl</Name>
+                    <Value>https://idp.example.com/authorize</Value>
+                </Property>
+                <Property>
+                    <Name>OAuth2TokenEPUrl</Name>
+                    <Value>https://idp.example.com/token</Value>
+                </Property>
+                <Property>
+                    <Name>callbackUrl</Name>
+                    <Value>https://is.wso2.ticxar.com/commonauth</Value>
+                </Property>
+            </Properties>
+        </FederatedAuthenticatorConfig>
+    </FederatedAuthenticatorConfigs>
+
+    <ClaimConfig>
+        <LocalClaimDialect>true</LocalClaimDialect>
+    </ClaimConfig>
+</IdentityProvider>

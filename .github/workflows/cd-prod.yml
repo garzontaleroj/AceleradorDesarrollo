@@ -1,0 +1,173 @@
+# =============================================================================
+# CD Pipeline — Deploy to PRODUCTION
+# Requiere aprobaciones + crea release tag
+# =============================================================================
+name: CD — Deploy PROD
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag de la imagen Docker (SHA del commit)"
+        required: true
+        type: string
+      release_version:
+        description: "Versión del release (ej: v1.2.0)"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: prod
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_ORG: ${{ github.repository_owner }}
+  KUBE_NAMESPACE: wso2-prod
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Pre-deployment checks
+  # ---------------------------------------------------------------------------
+  pre-checks:
+    name: Pre-deployment Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify image exists
+        run: |
+          for product in api-manager micro-integrator identity-server streaming-integrator; do
+            echo "🔍 Checking image: wso2-$product:${{ inputs.image_tag }}"
+            docker manifest inspect ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-$product:${{ inputs.image_tag }} > /dev/null 2>&1 || {
+              echo "❌ Image not found: wso2-$product:${{ inputs.image_tag }}"
+              exit 1
+            }
+          done
+
+      - name: Verify staging deployment
+        run: |
+          echo "⚠️ IMPORTANT: Ensure this version was validated in STAGING before proceeding."
+          echo "Image tag: ${{ inputs.image_tag }}"
+          echo "Release:   ${{ inputs.release_version }}"
+
+  # ---------------------------------------------------------------------------
+  # Deploy to PROD
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to PRODUCTION
+    runs-on: ubuntu-latest
+    needs: pre-checks
+    environment:
+      name: production
+      url: https://wso2.ticxar.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > $HOME/.kube/config
+
+      - name: Backup current state
+        run: |
+          echo "📦 Backing up current PROD state..."
+          kubectl -n ${{ env.KUBE_NAMESPACE }} get deployment -o yaml > /tmp/prod-backup.yaml
+          echo "Backup saved."
+
+      - name: Update image tags
+        run: |
+          cd infrastructure/kubernetes/overlays/prod
+          kustomize edit set image \
+            wso2-api-manager=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-api-manager:${{ inputs.image_tag }} \
+            wso2-micro-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-micro-integrator:${{ inputs.image_tag }} \
+            wso2-identity-server=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-identity-server:${{ inputs.image_tag }} \
+            wso2-streaming-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-streaming-integrator:${{ inputs.image_tag }}
+
+      - name: Deploy with Kustomize
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/prod
+          echo "⏳ Waiting for rollout..."
+          kubectl -n ${{ env.KUBE_NAMESPACE }} rollout status deployment --timeout=600s
+
+      - name: Post-deploy validation
+        run: |
+          echo "🧪 Running production smoke tests..."
+          bash scripts/smoke-test.sh prod
+
+      - name: Clean kubeconfig
+        if: always()
+        run: rm -f $HOME/.kube/config
+
+  # ---------------------------------------------------------------------------
+  # Create release
+  # ---------------------------------------------------------------------------
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: deploy
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            CHANGES=$(git log --pretty=format:"- %s (%h)" --no-merges HEAD)
+          else
+            CHANGES=$(git log --pretty=format:"- %s (%h)" --no-merges $LAST_TAG..HEAD)
+          fi
+          echo "changes<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_version }}
+          name: Release ${{ inputs.release_version }}
+          body: |
+            ## 🚀 Release ${{ inputs.release_version }}
+
+            **Image Tag:** `${{ inputs.image_tag }}`
+            **Deployed:** $(date -u +"%Y-%m-%d %H:%M UTC")
+
+            ### Changes
+            ${{ steps.changelog.outputs.changes }}
+          draft: false
+          prerelease: false
+
+  # ---------------------------------------------------------------------------
+  # Tag Docker images with release version
+  # ---------------------------------------------------------------------------
+  tag-images:
+    name: Tag Release Images
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Re-tag images with release version
+        run: |
+          for product in api-manager micro-integrator identity-server streaming-integrator; do
+            SRC=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-$product:${{ inputs.image_tag }}
+            DST=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-$product:${{ inputs.release_version }}
+            echo "🏷️ Tagging $SRC → $DST"
+            docker pull $SRC
+            docker tag $SRC $DST
+            docker push $DST
+          done

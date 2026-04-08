@@ -1,0 +1,35 @@
+# =============================================================================
+# WSO2 Micro Integrator — deployment.toml (DEV)
+# =============================================================================
+
+[server]
+hostname = "mi.dev.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 8290
+
+[transport.https]
+listener.port = 8253
+
+[management_api]
+listener.port = 9164
+
+# Logging
+[mediation]
+synapse.global_timeout_interval = 30000
+
+[logging]
+level = "DEBUG"
+
+# Endpoints — DEV backends
+[system.parameter]
+backend_url = "http://backend-dev.internal:8080"
+
+# Datasource
+[[datasource]]
+id = "WSO2CarbonDB"
+url = "jdbc:h2:./repository/database/WSO2CARBON_DB;DB_CLOSE_ON_EXIT=FALSE"
+username = "wso2carbon"
+password = "wso2carbon"
+driver = "org.h2.Driver"

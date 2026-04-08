@@ -1,0 +1,20 @@
+extends: "spectral:oas"
+
+rules:
+  # Forzar descripción en todas las APIs
+  info-description: error
+
+  # Requerir operationId
+  operation-operationId: error
+
+  # Requerir tags
+  operation-tags: error
+
+  # No permitir parámetros duplicados
+  no-eval-in-markdown: warn
+
+  # Esquemas deben tener ejemplos
+  oas3-valid-schema-example: warn
+
+  # Seguridad definida
+  oas3-operation-security-defined: error

@@ -1,0 +1,88 @@
+# =============================================================================
+# CD Pipeline — Deploy to QA
+# Se ejecuta manualmente después de validar DEV
+# =============================================================================
+name: CD — Deploy QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag de la imagen Docker (SHA del commit)"
+        required: true
+        type: string
+      run_e2e:
+        description: "Ejecutar tests E2E después del deploy"
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-qa
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: qa
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_ORG: ${{ github.repository_owner }}
+  KUBE_NAMESPACE: wso2-qa
+
+jobs:
+  deploy:
+    name: Deploy to QA
+    runs-on: ubuntu-latest
+    environment:
+      name: qa
+      url: https://qa.wso2.ticxar.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_QA }}" | base64 -d > $HOME/.kube/config
+
+      - name: Update image tags
+        run: |
+          cd infrastructure/kubernetes/overlays/qa
+          kustomize edit set image \
+            wso2-api-manager=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-api-manager:${{ inputs.image_tag }} \
+            wso2-micro-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-micro-integrator:${{ inputs.image_tag }} \
+            wso2-identity-server=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-identity-server:${{ inputs.image_tag }} \
+            wso2-streaming-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-streaming-integrator:${{ inputs.image_tag }}
+
+      - name: Deploy with Kustomize
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/qa
+          echo "⏳ Waiting for rollout..."
+          kubectl -n ${{ env.KUBE_NAMESPACE }} rollout status deployment --timeout=300s
+
+      - name: Clean kubeconfig
+        if: always()
+        run: rm -f $HOME/.kube/config
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: inputs.run_e2e == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install test dependencies
+        working-directory: tests/e2e
+        run: npm ci
+
+      - name: Run E2E tests
+        working-directory: tests/e2e
+        env:
+          BASE_URL: https://qa.wso2.ticxar.com
+        run: npm test

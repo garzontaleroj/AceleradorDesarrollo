@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wso2-api-manager
+  labels:
+    app.kubernetes.io/name: api-manager
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-manager
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: api-manager
+    spec:
+      containers:
+        - name: api-manager
+          image: wso2-api-manager:latest
+          ports:
+            - name: https-console
+              containerPort: 9443
+            - name: https-gateway
+              containerPort: 8243
+            - name: http-gateway
+              containerPort: 8280
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /services/Version
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /services/Version
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 180
+            periodSeconds: 30
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"

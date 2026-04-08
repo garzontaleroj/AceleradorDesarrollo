@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wso2-streaming-integrator
+  labels:
+    app.kubernetes.io/name: streaming-integrator
+    app.kubernetes.io/component: streaming
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: streaming-integrator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: streaming-integrator
+    spec:
+      containers:
+        - name: streaming-integrator
+          image: wso2-streaming-integrator:latest
+          ports:
+            - name: https
+              containerPort: 9443
+            - name: http
+              containerPort: 9090
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"

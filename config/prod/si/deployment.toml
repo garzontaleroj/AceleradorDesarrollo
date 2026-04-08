@@ -1,0 +1,52 @@
+# =============================================================================
+# WSO2 Streaming Integrator — deployment.toml (PROD)
+# =============================================================================
+
+[server]
+hostname = "si.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 9090
+
+[transport.https]
+listener.port = 9443
+
+[databridge.config]
+data.agent.config.queue.size = 131072
+data.agent.config.batch.size = 1000
+data.agent.config.core.pool.size = 8
+data.agent.config.max.pool.size = 16
+
+[siddhi.stores]
+type = "RDBMS"
+
+[[siddhi.stores.db]]
+ref = "WSO2_SIDDHI_DB"
+url = "jdbc:postgresql://postgres-prod.internal:5432/wso2siddhidb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 150
+pool_options.testOnBorrow = true
+pool_options.validationQuery = "SELECT 1"
+
+[coordination]
+enabled = true
+
+[ha]
+enabled = true
+is_active_node = true
+passive_node_details.host = "si-passive.wso2.ticxar.com"
+passive_node_details.port = 9091
+
+[logging]
+level = "ERROR"
+
+[siddhi.extensions]
+extension.1.name = "http"
+extension.1.namespace = "source"
+extension.2.name = "http"
+extension.2.namespace = "sink"
+extension.3.name = "log"
+extension.3.namespace = "sink"

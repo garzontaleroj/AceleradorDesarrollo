@@ -1,0 +1,65 @@
+# =============================================================================
+# CD Pipeline — Deploy to STAGING
+# Requiere aprobación manual — pre-producción
+# =============================================================================
+name: CD — Deploy STAGING
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Tag de la imagen Docker (SHA del commit)"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: staging
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_ORG: ${{ github.repository_owner }}
+  KUBE_NAMESPACE: wso2-staging
+
+jobs:
+  deploy:
+    name: Deploy to STAGING
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.wso2.ticxar.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
+
+      - name: Update image tags
+        run: |
+          cd infrastructure/kubernetes/overlays/staging
+          kustomize edit set image \
+            wso2-api-manager=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-api-manager:${{ inputs.image_tag }} \
+            wso2-micro-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-micro-integrator:${{ inputs.image_tag }} \
+            wso2-identity-server=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-identity-server:${{ inputs.image_tag }} \
+            wso2-streaming-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-streaming-integrator:${{ inputs.image_tag }}
+
+      - name: Deploy with Kustomize
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/staging
+          echo "⏳ Waiting for rollout..."
+          kubectl -n ${{ env.KUBE_NAMESPACE }} rollout status deployment --timeout=300s
+
+      - name: Validate deployment
+        run: |
+          echo "🔍 Validating STAGING deployment..."
+          bash scripts/smoke-test.sh staging
+
+      - name: Clean kubeconfig
+        if: always()
+        run: rm -f $HOME/.kube/config

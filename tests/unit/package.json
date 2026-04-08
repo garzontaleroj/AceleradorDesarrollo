@@ -1,0 +1,14 @@
+{
+  "name": "wso2-accelerator-unit-tests",
+  "version": "1.0.0",
+  "description": "Tests unitarios para el acelerador WSO2",
+  "scripts": {
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.0"
+  }
+}

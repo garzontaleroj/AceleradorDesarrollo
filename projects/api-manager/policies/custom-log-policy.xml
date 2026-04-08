@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Política de ejemplo: Log de request/response
+  Ubicar en: projects/api-manager/policies/
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="custom-log-policy">
+    <log level="custom">
+        <property name="MESSAGE" value="=== Custom API Policy ==="/>
+        <property name="HTTP_METHOD" expression="$axis2:HTTP_METHOD"/>
+        <property name="RESOURCE" expression="$axis2:REST_URL_POSTFIX"/>
+    </log>
+</sequence>

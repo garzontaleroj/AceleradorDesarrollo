@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wso2-identity-server
+  labels:
+    app.kubernetes.io/name: identity-server
+    app.kubernetes.io/component: identity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: identity-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: identity-server
+    spec:
+      containers:
+        - name: identity-server
+          image: wso2-identity-server:latest
+          ports:
+            - name: https
+              containerPort: 9443
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          readinessProbe:
+            httpGet:
+              path: /carbon/admin/login.jsp
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 120
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /carbon/admin/login.jsp
+              port: 9443
+              scheme: HTTPS
+            initialDelaySeconds: 180
+            periodSeconds: 30
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"

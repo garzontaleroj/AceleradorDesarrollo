@@ -1,0 +1,43 @@
+# =============================================================================
+# WSO2 Streaming Integrator — deployment.toml (QA)
+# =============================================================================
+
+[server]
+hostname = "si.qa.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 9090
+
+[transport.https]
+listener.port = 9443
+
+[databridge.config]
+data.agent.config.queue.size = 32768
+data.agent.config.batch.size = 200
+data.agent.config.core.pool.size = 2
+data.agent.config.max.pool.size = 4
+
+[siddhi.stores]
+type = "RDBMS"
+
+[[siddhi.stores.db]]
+ref = "WSO2_SIDDHI_DB"
+url = "jdbc:postgresql://postgres-qa.internal:5432/wso2siddhidb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+
+[coordination]
+enabled = true
+
+[logging]
+level = "INFO"
+
+[siddhi.extensions]
+extension.1.name = "http"
+extension.1.namespace = "source"
+extension.2.name = "http"
+extension.2.namespace = "sink"
+extension.3.name = "log"
+extension.3.namespace = "sink"

@@ -1,0 +1,74 @@
+# ==========================
+# WSO2 Development Accelerator
+# ==========================
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+
+# WSO2 Build Artifacts
+**/tmp/
+**/logs/
+**/repository/logs/
+**/repository/deployment/server/
+**/*.car
+**/*.zip
+**/carbon.home/
+
+# WSO2 MI
+**/CompositeExporter/target/
+**/CarbonApplication/target/
+
+# Ballerina
+**/target/
+**/Dependencies.toml
+
+# Docker
+docker-compose.override.yml
+
+# Kubernetes
+**/kubeconfig
+*.kubeconfig
+**/*.tfstate
+**/*.tfstate.backup
+
+# Secrets — NUNCA commit
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.truststore
+secrets/
+.env
+.env.*
+!.env.example
+
+# Node (para tests)
+node_modules/
+package-lock.json
+
+# Temp
+*.tmp
+*.bak
+*.log

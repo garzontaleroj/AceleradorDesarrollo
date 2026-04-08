@@ -1,0 +1,88 @@
+openapi: "3.0.3"
+info:
+  title: Sample API
+  description: API de ejemplo para el acelerador WSO2
+  version: "1.0.0"
+  contact:
+    name: Equipo WSO2
+    email: wso2@ticxar.com
+
+servers:
+  - url: https://gateway.wso2.ticxar.com
+    description: API Gateway
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Servicio saludable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "UP"
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /sample:
+    get:
+      summary: Obtener recursos de ejemplo
+      operationId: getSamples
+      tags:
+        - Sample
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SampleResource"
+
+components:
+  schemas:
+    SampleResource:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://is.wso2.ticxar.com/oauth2/token
+          scopes:
+            read: Lectura
+            write: Escritura
+
+security:
+  - OAuth2:
+      - read

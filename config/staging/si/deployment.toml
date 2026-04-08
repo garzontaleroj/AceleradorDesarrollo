@@ -1,0 +1,44 @@
+# =============================================================================
+# WSO2 Streaming Integrator — deployment.toml (STAGING)
+# =============================================================================
+
+[server]
+hostname = "si.staging.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 9090
+
+[transport.https]
+listener.port = 9443
+
+[databridge.config]
+data.agent.config.queue.size = 65536
+data.agent.config.batch.size = 500
+data.agent.config.core.pool.size = 4
+data.agent.config.max.pool.size = 8
+
+[siddhi.stores]
+type = "RDBMS"
+
+[[siddhi.stores.db]]
+ref = "WSO2_SIDDHI_DB"
+url = "jdbc:postgresql://postgres-staging.internal:5432/wso2siddhidb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 80
+
+[coordination]
+enabled = true
+
+[logging]
+level = "WARN"
+
+[siddhi.extensions]
+extension.1.name = "http"
+extension.1.namespace = "source"
+extension.2.name = "http"
+extension.2.namespace = "sink"
+extension.3.name = "log"
+extension.3.namespace = "sink"

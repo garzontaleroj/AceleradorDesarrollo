@@ -1,0 +1,34 @@
+# Kustomize overlay — DEV
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: wso2-dev
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+commonLabels:
+  environment: dev
+
+patches:
+  - target:
+      kind: Deployment
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 1
+
+images:
+  - name: wso2-api-manager
+    newName: ghcr.io/ticxar/wso2-api-manager
+    newTag: dev-latest
+  - name: wso2-micro-integrator
+    newName: ghcr.io/ticxar/wso2-micro-integrator
+    newTag: dev-latest
+  - name: wso2-identity-server
+    newName: ghcr.io/ticxar/wso2-identity-server
+    newTag: dev-latest
+  - name: wso2-streaming-integrator
+    newName: ghcr.io/ticxar/wso2-streaming-integrator
+    newTag: dev-latest

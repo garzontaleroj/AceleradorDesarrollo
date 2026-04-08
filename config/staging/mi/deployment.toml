@@ -1,0 +1,35 @@
+# =============================================================================
+# WSO2 Micro Integrator — deployment.toml (STAGING)
+# =============================================================================
+
+[server]
+hostname = "mi.staging.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 8290
+
+[transport.https]
+listener.port = 8253
+
+[management_api]
+listener.port = 9164
+
+[mediation]
+synapse.global_timeout_interval = 60000
+
+[logging]
+level = "WARN"
+
+[system.parameter]
+backend_url = "http://backend-staging.internal:8080"
+
+[[datasource]]
+id = "WSO2CarbonDB"
+url = "jdbc:postgresql://postgres-staging.internal:5432/wso2carbondb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 80
+pool_options.maxWait = 60000
+pool_options.validationInterval = 30000

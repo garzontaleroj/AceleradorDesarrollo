@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wso2-micro-integrator
+  labels:
+    app.kubernetes.io/name: micro-integrator
+    app.kubernetes.io/component: integration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: micro-integrator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: micro-integrator
+    spec:
+      containers:
+        - name: micro-integrator
+          image: wso2-micro-integrator:latest
+          ports:
+            - name: http
+              containerPort: 8290
+            - name: https
+              containerPort: 8253
+            - name: management
+              containerPort: 9164
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /management/apis
+              port: 9164
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /management/apis
+              port: 9164
+              scheme: HTTPS
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx512m"

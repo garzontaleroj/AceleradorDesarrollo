@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Secuencia de manejo de errores común
+  Reutilizable desde cualquier API, proxy o secuencia
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="CommonErrorHandler">
+
+    <log level="custom">
+        <property name="ERROR_HANDLER" value="=== CommonErrorHandler ==="/>
+        <property name="ERROR_CODE" expression="get-property('ERROR_CODE')"/>
+        <property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')"/>
+        <property name="ERROR_DETAIL" expression="get-property('ERROR_DETAIL')"/>
+    </log>
+
+    <filter source="get-property('ERROR_CODE')" regex="101503|101504|101505">
+        <then>
+            <!-- Timeout / Connection errors -->
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": {
+                            "code": "SERVICE_UNAVAILABLE",
+                            "message": "El servicio backend no está disponible",
+                            "detail": "$1"
+                        }
+                    }
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('ERROR_MESSAGE')"/>
+                </args>
+            </payloadFactory>
+            <property name="HTTP_SC" value="503" scope="axis2"/>
+        </then>
+        <else>
+            <!-- Otros errores -->
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": {
+                            "code": "INTERNAL_ERROR",
+                            "message": "Error interno de integración",
+                            "detail": "$1"
+                        }
+                    }
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('ERROR_MESSAGE')"/>
+                </args>
+            </payloadFactory>
+            <property name="HTTP_SC" value="500" scope="axis2"/>
+        </else>
+    </filter>
+
+    <property name="messageType" value="application/json" scope="axis2"/>
+    <property name="NO_ENTITY_BODY" scope="default" action="remove"/>
+    <respond/>
+
+</sequence>

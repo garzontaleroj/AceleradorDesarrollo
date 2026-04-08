@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Proxy Service de ejemplo — SOAP/REST
+-->
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="SampleProxy"
+       transports="http https"
+       startOnLoad="true">
+
+    <target>
+        <inSequence>
+            <log level="custom">
+                <property name="SERVICE" value="SampleProxy"/>
+                <property name="ACTION" value="Request received"/>
+            </log>
+            <send>
+                <endpoint key="SampleBackendEP"/>
+            </send>
+        </inSequence>
+        <outSequence>
+            <log level="custom">
+                <property name="SERVICE" value="SampleProxy"/>
+                <property name="ACTION" value="Response received"/>
+            </log>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CommonErrorHandler"/>
+        </faultSequence>
+    </target>
+
+    <publishWSDL key="gov:/wsdl/SampleService.wsdl"/>
+
+</proxy>

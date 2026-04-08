@@ -1,0 +1,14 @@
+{
+  "name": "wso2-accelerator-integration-tests",
+  "version": "1.0.0",
+  "description": "Tests de integración para productos WSO2",
+  "scripts": {
+    "test": "jest --config jest.config.js --testTimeout=30000",
+    "test:mi": "jest --testPathPattern=mi",
+    "test:apim": "jest --testPathPattern=apim"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "axios": "^1.7.0"
+  }
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Service Provider de ejemplo — Aplicación registrada en IS
+-->
+<ServiceProvider>
+    <ApplicationName>SampleWebApp</ApplicationName>
+    <Description>Aplicación web de ejemplo registrada en WSO2 IS</Description>
+
+    <InboundAuthenticationConfig>
+        <InboundAuthenticationRequestConfigs>
+            <InboundAuthenticationRequestConfig>
+                <InboundAuthKey>__PLACEHOLDER_CLIENT_ID__</InboundAuthKey>
+                <InboundAuthType>oauth2</InboundAuthType>
+                <Properties>
+                    <Property>
+                        <Name>oauthConsumerSecret</Name>
+                        <Value>__PLACEHOLDER_SECRET__</Value>
+                    </Property>
+                </Properties>
+            </InboundAuthenticationRequestConfig>
+        </InboundAuthenticationRequestConfigs>
+    </InboundAuthenticationConfig>
+
+    <LocalAndOutBoundAuthenticationConfig>
+        <AuthenticationType>default</AuthenticationType>
+    </LocalAndOutBoundAuthenticationConfig>
+
+    <ClaimConfig>
+        <AlwaysSendMappedLocalSubjectId>true</AlwaysSendMappedLocalSubjectId>
+    </ClaimConfig>
+
+    <PermissionAndRoleConfig/>
+</ServiceProvider>

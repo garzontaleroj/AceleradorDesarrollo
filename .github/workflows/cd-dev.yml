@@ -1,0 +1,155 @@
+# =============================================================================
+# CD Pipeline — Deploy to DEV
+# Se ejecuta automáticamente al hacer merge a main
+# =============================================================================
+name: CD — Deploy DEV
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: dev
+  JAVA_VERSION: "17"
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_ORG: ${{ github.repository_owner }}
+  KUBE_NAMESPACE: wso2-dev
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Detectar cambios
+  # ---------------------------------------------------------------------------
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      apim: ${{ steps.filter.outputs.apim }}
+      mi: ${{ steps.filter.outputs.mi }}
+      is: ${{ steps.filter.outputs.is }}
+      si: ${{ steps.filter.outputs.si }}
+      ballerina: ${{ steps.filter.outputs.ballerina }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            apim:
+              - 'projects/api-manager/**'
+              - 'infrastructure/docker/api-manager/**'
+              - 'config/dev/apim/**'
+            mi:
+              - 'projects/micro-integrator/**'
+              - 'infrastructure/docker/micro-integrator/**'
+              - 'config/dev/mi/**'
+            is:
+              - 'projects/identity-server/**'
+              - 'infrastructure/docker/identity-server/**'
+              - 'config/dev/is/**'
+            si:
+              - 'projects/streaming-integrator/**'
+              - 'infrastructure/docker/streaming-integrator/**'
+              - 'config/dev/si/**'
+            ballerina:
+              - 'projects/ballerina/**'
+
+  # ---------------------------------------------------------------------------
+  # Build & Push Docker images
+  # ---------------------------------------------------------------------------
+  build-push:
+    name: Build & Push — ${{ matrix.product }}
+    runs-on: ubuntu-latest
+    needs: changes
+    strategy:
+      matrix:
+        include:
+          - product: api-manager
+            changed: ${{ needs.changes.outputs.apim }}
+          - product: micro-integrator
+            changed: ${{ needs.changes.outputs.mi }}
+          - product: identity-server
+            changed: ${{ needs.changes.outputs.is }}
+          - product: streaming-integrator
+            changed: ${{ needs.changes.outputs.si }}
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        if: matrix.changed == 'true'
+
+      - name: Login to GHCR
+        if: matrix.changed == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        if: matrix.changed == 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        if: matrix.changed == 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/docker/${{ matrix.product }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-${{ matrix.product }}:${{ github.sha }}
+            ${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-${{ matrix.product }}:dev-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            ENVIRONMENT=dev
+
+  # ---------------------------------------------------------------------------
+  # Deploy to Kubernetes DEV
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to DEV
+    runs-on: ubuntu-latest
+    needs: build-push
+    environment:
+      name: dev
+      url: https://dev.wso2.ticxar.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > $HOME/.kube/config
+
+      - name: Update image tags
+        run: |
+          cd infrastructure/kubernetes/overlays/dev
+          kustomize edit set image \
+            wso2-api-manager=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-api-manager:${{ github.sha }} \
+            wso2-micro-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-micro-integrator:${{ github.sha }} \
+            wso2-identity-server=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-identity-server:${{ github.sha }} \
+            wso2-streaming-integrator=${{ env.DOCKER_REGISTRY }}/${{ env.DOCKER_ORG }}/wso2-streaming-integrator:${{ github.sha }}
+
+      - name: Deploy with Kustomize
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/dev
+          echo "⏳ Waiting for rollout..."
+          kubectl -n ${{ env.KUBE_NAMESPACE }} rollout status deployment --timeout=300s
+
+      - name: Smoke tests
+        run: |
+          echo "🧪 Running smoke tests against DEV..."
+          bash scripts/smoke-test.sh dev
+
+      - name: Clean kubeconfig
+        if: always()
+        run: rm -f $HOME/.kube/config

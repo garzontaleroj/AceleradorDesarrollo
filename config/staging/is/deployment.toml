@@ -1,0 +1,53 @@
+# =============================================================================
+# WSO2 Identity Server — deployment.toml (STAGING)
+# =============================================================================
+
+[server]
+hostname = "is.staging.wso2.ticxar.com"
+offset = 0
+
+[super_admin]
+username = "admin"
+password = "$secret{admin_password}"
+
+[authentication.authenticator.totp]
+enable = true
+
+[authentication.authenticator.email_otp]
+enable = true
+
+[oauth]
+token_cleanup.enable = true
+token_cleanup.retain_access_tokens_for_auditing = true
+
+[oauth.endpoints]
+oauth2_authz_url = "https://is.staging.wso2.ticxar.com:9443/oauth2/authorize"
+oauth2_token_url = "https://is.staging.wso2.ticxar.com:9443/oauth2/token"
+oauth2_revoke_url = "https://is.staging.wso2.ticxar.com:9443/oauth2/revoke"
+oauth2_introspect_url = "https://is.staging.wso2.ticxar.com:9443/oauth2/introspect"
+oauth2_userinfo_url = "https://is.staging.wso2.ticxar.com:9443/oauth2/userinfo"
+
+[cors]
+allow_generic_http_requests = true
+allow_any_origin = false
+allowed_origins = ["https://portal.staging.wso2.ticxar.com"]
+
+[logging]
+level = "WARN"
+
+[[datasource]]
+id = "WSO2IdentityDB"
+url = "jdbc:postgresql://postgres-staging.internal:5432/wso2identitydb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 80
+pool_options.validationInterval = 30000
+
+[[datasource]]
+id = "WSO2_SHARED_DB"
+url = "jdbc:postgresql://postgres-staging.internal:5432/wso2shareddb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 80

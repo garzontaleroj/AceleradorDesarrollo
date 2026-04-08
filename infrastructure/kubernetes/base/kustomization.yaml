@@ -1,0 +1,17 @@
+# Kustomize base — Micro Integrator
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - api-manager/deployment.yaml
+  - api-manager/service.yaml
+  - micro-integrator/deployment.yaml
+  - micro-integrator/service.yaml
+  - identity-server/deployment.yaml
+  - identity-server/service.yaml
+  - streaming-integrator/deployment.yaml
+  - streaming-integrator/service.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: wso2-platform
+  app.kubernetes.io/managed-by: kustomize

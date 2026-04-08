@@ -1,0 +1,36 @@
+# =============================================================================
+# WSO2 Micro Integrator — deployment.toml (QA)
+# =============================================================================
+
+[server]
+hostname = "mi.qa.wso2.ticxar.com"
+offset = 0
+
+[transport.http]
+listener.port = 8290
+
+[transport.https]
+listener.port = 8253
+
+[management_api]
+listener.port = 9164
+
+[mediation]
+synapse.global_timeout_interval = 30000
+
+[logging]
+level = "INFO"
+
+# Endpoints — QA backends
+[system.parameter]
+backend_url = "http://backend-qa.internal:8080"
+
+# Datasource — usar PostgreSQL en QA
+[[datasource]]
+id = "WSO2CarbonDB"
+url = "jdbc:postgresql://postgres-qa.internal:5432/wso2carbondb"
+username = "$secret{db_username}"
+password = "$secret{db_password}"
+driver = "org.postgresql.Driver"
+pool_options.maxActive = 50
+pool_options.maxWait = 60000

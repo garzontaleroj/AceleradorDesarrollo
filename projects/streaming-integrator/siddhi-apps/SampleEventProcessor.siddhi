@@ -1,0 +1,65 @@
+@App:name("SampleEventProcessor")
+@App:description("Procesador de eventos de ejemplo — filtra y enriquece eventos entrantes")
+
+-- =============================================================================
+-- Stream de entrada: eventos raw desde HTTP/Kafka
+-- =============================================================================
+@source(
+    type = 'http',
+    receiver.url = 'http://0.0.0.0:8280/events/sample',
+    basic.auth.enabled = 'false',
+    @map(type = 'json')
+)
+define stream SampleInputStream (
+    eventId string,
+    eventType string,
+    payload string,
+    timestamp long
+);
+
+-- =============================================================================
+-- Stream de salida: eventos procesados
+-- =============================================================================
+@sink(
+    type = 'log',
+    prefix = 'PROCESSED_EVENT',
+    @map(type = 'json')
+)
+define stream ProcessedOutputStream (
+    eventId string,
+    eventType string,
+    payload string,
+    processedAt string,
+    isValid bool
+);
+
+-- =============================================================================
+-- Query: Filtrar solo eventos válidos y enriquecer
+-- =============================================================================
+@info(name = 'FilterAndEnrich')
+from SampleInputStream[eventType != 'IGNORE']
+select
+    eventId,
+    eventType,
+    payload,
+    time:currentTimestamp() as processedAt,
+    true as isValid
+insert into ProcessedOutputStream;
+
+-- =============================================================================
+-- Query: Log de eventos inválidos
+-- =============================================================================
+@sink(type = 'log', prefix = 'INVALID_EVENT', @map(type = 'json'))
+define stream InvalidEventStream (
+    eventId string,
+    eventType string,
+    reason string
+);
+
+@info(name = 'LogInvalid')
+from SampleInputStream[eventType == 'IGNORE']
+select
+    eventId,
+    eventType,
+    'Event type IGNORE filtered out' as reason
+insert into InvalidEventStream;

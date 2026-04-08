@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wso2-micro-integrator
+  labels:
+    app.kubernetes.io/name: micro-integrator
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8290
+      targetPort: 8290
+    - name: https
+      port: 8253
+      targetPort: 8253
+    - name: management
+      port: 9164
+      targetPort: 9164
+  selector:
+    app.kubernetes.io/name: micro-integrator
