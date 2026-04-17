@@ -1,0 +1,8 @@
+# Variables para la plantilla API con Autenticación OAuth2
+variables:
+  API_NAME: "SecureCustomerAPI"
+  API_CONTEXT: "/secure/customers"
+  API_VERSION: "v1"
+  BACKEND_URL: "http://backend-service:8080/api"
+  IS_HOST: "is.local"
+  IS_PORT: "9443"

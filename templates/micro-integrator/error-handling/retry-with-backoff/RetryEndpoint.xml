@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Endpoint con Retry y Exponential Backoff
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  Configura reintentos con backoff exponencial usando las propiedades
+  nativas de suspensión y retry de WSO2 MI.
+
+  Variables:
+    {{BACKEND_URL}}         - URL del backend
+    {{INITIAL_DURATION}}    - Delay inicial de suspensión (ms)
+    {{PROGRESSION_FACTOR}}  - Factor exponencial (ej: 2 = duplicar cada vez)
+    {{MAX_DURATION}}        - Delay máximo de suspensión (ms)
+    {{RETRY_COUNT}}         - Reintentos antes de suspender
+    {{RETRY_DELAY}}         - Delay entre reintentos (ms)
+    {{TIMEOUT_DURATION}}    - Timeout de conexión (ms)
+-->
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="RetryBackoffEndpoint">
+    <http method="POST" uri-template="{{BACKEND_URL}}">
+
+        <!-- Timeout de conexión y respuesta -->
+        <timeout>
+            <duration>{{TIMEOUT_DURATION}}</duration>
+            <responseAction>fault</responseAction>
+        </timeout>
+
+        <!--
+          Suspensión: cuando se agotan los reintentos, el endpoint se suspende.
+          initialDuration: tiempo inicial de suspensión
+          progressionFactor: multiplicador (2 = exponential backoff)
+          maximumDuration: tope máximo de espera
+          errorCodes: códigos HTTP/transport que disparan suspensión
+        -->
+        <suspendOnFailure>
+            <initialDuration>{{INITIAL_DURATION}}</initialDuration>
+            <progressionFactor>{{PROGRESSION_FACTOR}}</progressionFactor>
+            <maximumDuration>{{MAX_DURATION}}</maximumDuration>
+            <errorCodes>101504, 101505, 101500</errorCodes>
+            <!--
+              101504 = Send timeout
+              101505 = Connection timeout
+              101500 = Connection refused / closed
+            -->
+        </suspendOnFailure>
+
+        <!--
+          Retry: intentos antes de que el endpoint entre en suspensión.
+          retryErrorCodes: errores que disparan reintento
+          retryCount: número de reintentos
+          retryDelay: delay entre reintentos (ms)
+        -->
+        <markForSuspension>
+            <retriesBeforeSuspension>{{RETRY_COUNT}}</retriesBeforeSuspension>
+            <retryDelay>{{RETRY_DELAY}}</retryDelay>
+            <errorCodes>101504, 101505, 101500</errorCodes>
+        </markForSuspension>
+    </http>
+</endpoint>

@@ -24,7 +24,7 @@ spec:
             - name: https
               containerPort: 8253
             - name: management
-              containerPort: 9164
+              containerPort: 9154
           resources:
             requests:
               memory: "512Mi"
@@ -32,19 +32,21 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
+          startupProbe:
+            tcpSocket:
+              port: 8290
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 12
           readinessProbe:
-            httpGet:
-              path: /management/apis
-              port: 9164
-              scheme: HTTPS
-            initialDelaySeconds: 60
+            tcpSocket:
+              port: 8290
+            initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
-            httpGet:
-              path: /management/apis
-              port: 9164
-              scheme: HTTPS
-            initialDelaySeconds: 90
+            tcpSocket:
+              port: 8290
+            initialDelaySeconds: 10
             periodSeconds: 30
           env:
             - name: JAVA_OPTS

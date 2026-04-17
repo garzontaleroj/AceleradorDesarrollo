@@ -4,6 +4,7 @@
 
 | Ambiente | Propósito | Nivel de Log | Base de Datos | Réplicas | Aprobación |
 |----------|-----------|-------------|---------------|----------|------------|
+| **LOCAL** | Demos y desarrollo local | DEBUG | H2 (embebida) | 1 | N/A |
 | **DEV** | Desarrollo y pruebas rápidas | DEBUG | H2 (embebida) | 1 | Automático |
 | **QA** | Pruebas de integración y E2E | INFO | PostgreSQL | 2 | Manual |
 | **STAGING** | Pre-producción, pruebas de carga | WARN | PostgreSQL | 2 | Manual + Approval |
@@ -11,21 +12,89 @@
 
 ## Dominios por Ambiente
 
-| Producto | DEV | QA | STAGING | PROD |
-|----------|-----|-----|---------|------|
-| API Manager | `apim.dev.wso2.ticxar.com` | `apim.qa.wso2.ticxar.com` | `apim.staging.wso2.ticxar.com` | `apim.wso2.ticxar.com` |
-| Micro Integrator | `mi.dev.wso2.ticxar.com` | `mi.qa.wso2.ticxar.com` | `mi.staging.wso2.ticxar.com` | `mi.wso2.ticxar.com` |
-| Identity Server | `is.dev.wso2.ticxar.com` | `is.qa.wso2.ticxar.com` | `is.staging.wso2.ticxar.com` | `is.wso2.ticxar.com` |
-| Streaming Integrator | `si.dev.wso2.ticxar.com` | `si.qa.wso2.ticxar.com` | `si.staging.wso2.ticxar.com` | `si.wso2.ticxar.com` |
+| Producto | LOCAL (port-forward) | DEV | QA | STAGING | PROD |
+|----------|-----|-----|-----|---------|------|
+| API Manager | `localhost:9443` | `apim.dev.wso2.ticxar.com` | `apim.qa.wso2.ticxar.com` | `apim.staging.wso2.ticxar.com` | `apim.wso2.ticxar.com` |
+| Micro Integrator | `localhost:8290` | `mi.dev.wso2.ticxar.com` | `mi.qa.wso2.ticxar.com` | `mi.staging.wso2.ticxar.com` | `mi.wso2.ticxar.com` |
+| Identity Server | `localhost:9444` | `is.dev.wso2.ticxar.com` | `is.qa.wso2.ticxar.com` | `is.staging.wso2.ticxar.com` | `is.wso2.ticxar.com` |
+| Streaming Integrator | `localhost:9445` | `si.dev.wso2.ticxar.com` | `si.qa.wso2.ticxar.com` | `si.staging.wso2.ticxar.com` | `si.wso2.ticxar.com` |
 
 ## Namespaces de Kubernetes
 
 | Ambiente | Namespace |
 |----------|-----------|
+| LOCAL | `wso2-dev` (reutiliza overlay dev) |
 | DEV | `wso2-dev` |
 | QA | `wso2-qa` |
 | STAGING | `wso2-staging` |
 | PROD | `wso2-prod` |
+
+## LOCAL (Minikube)
+
+Entorno de desarrollo local usando Minikube. Ideal para demos rápidas y validación
+antes de subir cambios al cluster DEV.
+
+### Requisitos
+
+| Recurso | Mínimo | Recomendado |
+|---------|--------|-------------|
+| CPUs Minikube | 2 | 4 |
+| Memoria | 4 GB | 8 GB |
+| Disco | 20 GB | 40 GB |
+
+### Recursos K8s por Producto
+
+| Producto | CPU Request | Memoria Request | Notas |
+|----------|------------|-----------------|-------|
+| API Manager | 500m | 1 Gi | Requiere más memoria |
+| Identity Server | 500m | 1 Gi | Requiere más memoria |
+| Micro Integrator | 250m | 512 Mi | Ligero |
+| Streaming Integrator | 250m | 512 Mi | Ligero |
+| **Total (4 productos)** | **1500m** | **3 Gi** | Excede 2 CPUs |
+
+> **Nota**: Con 2 CPUs de Minikube, usar `--product` para desplegar un solo producto.
+
+### Acceso a Servicios
+
+| Producto | Comando de acceso | URL local |
+|----------|-------------------|-----------|
+| API Manager | `kubectl port-forward svc/wso2-api-manager -n wso2-dev 9443:9443 8243:8243 8280:8280` | `https://localhost:9443/carbon` |
+| Micro Integrator | `kubectl port-forward svc/wso2-micro-integrator -n wso2-dev 8290:8290 8253:8253` | `http://localhost:8290/services` |
+| Identity Server | `kubectl port-forward svc/wso2-identity-server -n wso2-dev 9444:9443` | `https://localhost:9444/console` |
+| Streaming Integrator | `kubectl port-forward svc/wso2-streaming-integrator -n wso2-dev 9445:9443 9090:9090` | `https://localhost:9445/carbon` |
+
+> **Nota**: IS usa puerto local `9444` y SI usa `9445` para evitar conflicto con APIM en `9443`.
+
+### Puertos por Producto
+
+| Producto | Puerto | Protocolo | Uso |
+|----------|--------|-----------|-----|
+| **API Manager** | 9443 | HTTPS | Publisher, DevPortal, Admin |
+| | 8243 | HTTPS | Gateway (producción) |
+| | 8280 | HTTP | Gateway (sandbox) |
+| **Micro Integrator** | 8290 | HTTP | HTTP Passthrough (APIs/proxies) |
+| | 8253 | HTTPS | HTTPS Passthrough |
+| | 9154 | HTTPS | Management API (interno, Basic auth) |
+| **Identity Server** | 9443 | HTTPS | Console, OAuth/OIDC endpoints |
+| **Streaming Integrator** | 9443 | HTTPS | Console |
+| | 9090 | HTTP | Siddhi API |
+
+### Uso Rápido
+
+```bash
+# Opción 1: Desplegar un solo producto (recomendado con 2 CPUs)
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build --product micro-integrator
+
+# Opción 2: Desplegar todo el stack (requiere 4+ CPUs)
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build
+
+# Operaciones
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --status
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --logs micro-integrator
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --clean
+```
+
+> **Importante**: En Windows usar **Git Bash**, no WSL. WSL no tiene acceso al Minikube de Windows.
 
 ## DEV
 

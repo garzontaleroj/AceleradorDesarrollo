@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Secuencia de validación de token OAuth2 via introspección.
+  Extrae el Bearer token del header Authorization, lo valida
+  contra el endpoint de introspección del IS y bloquea con 401
+  si es inválido.
+
+  Variables:
+    {{IS_HOST}} - Host del Identity Server
+    {{IS_PORT}} - Puerto del IS (ej: 9443)
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="TokenValidationSequence">
+
+    <!-- Extraer token del header Authorization -->
+    <property name="auth_header"
+              expression="get-property('transport', 'Authorization')"
+              scope="default"/>
+
+    <!-- Verificar que existe el header -->
+    <filter regex=".*" source="get-property('auth_header')">
+        <then>
+            <!-- Extraer solo el token (quitar "Bearer ") -->
+            <property name="access_token"
+                      expression="fn:substring-after(get-property('auth_header'), 'Bearer ')"
+                      scope="default"/>
+
+            <!-- Verificar que el token no está vacío -->
+            <filter regex=".+" source="get-property('access_token')">
+                <then>
+                    <!-- Guardar el payload original -->
+                    <property name="ORIGINAL_PAYLOAD"
+                              expression="json-eval($)"
+                              scope="default"
+                              type="STRING"/>
+
+                    <!-- Llamar al endpoint de introspección del IS -->
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+                                <soapenv:Body>
+                                    <xsd:validateToken xmlns:xsd="http://org.wso2.carbon/identity/oauth2/introspection">
+                                        <xsd:token>$1</xsd:token>
+                                    </xsd:validateToken>
+                                </soapenv:Body>
+                            </soapenv:Envelope>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="get-property('access_token')"/>
+                        </args>
+                    </payloadFactory>
+
+                    <header name="Content-Type" value="application/x-www-form-urlencoded" scope="transport"/>
+                    <header name="Authorization"
+                            expression="fn:concat('Basic ', base64Encode('admin:admin'))"
+                            scope="transport"/>
+
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <token xmlns="">$1</token>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="get-property('access_token')"/>
+                        </args>
+                    </payloadFactory>
+
+                    <property name="messageType" value="application/x-www-form-urlencoded" scope="axis2"/>
+                    <property name="token" expression="get-property('access_token')" scope="default"/>
+
+                    <call>
+                        <endpoint>
+                            <http method="POST"
+                                  uri-template="https://{{IS_HOST}}:{{IS_PORT}}/oauth2/introspect">
+                                <suspendOnFailure>
+                                    <initialDuration>-1</initialDuration>
+                                    <progressionFactor>1</progressionFactor>
+                                </suspendOnFailure>
+                            </http>
+                        </endpoint>
+                    </call>
+
+                    <!-- Evaluar respuesta de introspección -->
+                    <property name="token_active"
+                              expression="json-eval($.active)"
+                              scope="default"/>
+
+                    <filter regex="true" source="get-property('token_active')">
+                        <then>
+                            <!-- Token válido: restaurar payload original y continuar -->
+                            <log level="custom">
+                                <property name="STATUS" value="Token válido"/>
+                                <property name="USER" expression="json-eval($.username)"/>
+                            </log>
+                            <payloadFactory media-type="json">
+                                <format>$1</format>
+                                <args>
+                                    <arg evaluator="xml" expression="get-property('ORIGINAL_PAYLOAD')"/>
+                                </args>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <!-- Token inválido o expirado -->
+                            <log level="custom">
+                                <property name="STATUS" value="Token inválido o expirado"/>
+                            </log>
+                            <payloadFactory media-type="json">
+                                <format>
+                                    {"error": "unauthorized", "message": "Token inválido o expirado"}
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                            <property name="HTTP_SC" value="401" scope="axis2"/>
+                            <property name="messageType" value="application/json" scope="axis2"/>
+                            <respond/>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <!-- Token vacío -->
+                    <payloadFactory media-type="json">
+                        <format>
+                            {"error": "unauthorized", "message": "Bearer token requerido"}
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <property name="HTTP_SC" value="401" scope="axis2"/>
+                    <property name="messageType" value="application/json" scope="axis2"/>
+                    <respond/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <!-- Sin header Authorization -->
+            <payloadFactory media-type="json">
+                <format>
+                    {"error": "unauthorized", "message": "Header Authorization requerido"}
+                </format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="401" scope="axis2"/>
+            <property name="messageType" value="application/json" scope="axis2"/>
+            <respond/>
+        </else>
+    </filter>
+</sequence>

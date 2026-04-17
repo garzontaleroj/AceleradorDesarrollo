@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: API REST con Autenticación OAuth2
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  Valida Bearer tokens contra WSO2 Identity Server antes de
+  reenviar la petición al backend.
+
+  Variables:
+    {{API_NAME}}     - Nombre de la API
+    {{API_CONTEXT}}  - Contexto URL
+    {{API_VERSION}}  - Versión
+    {{BACKEND_URL}}  - URL del backend
+    {{IS_HOST}}      - Host del Identity Server
+    {{IS_PORT}}      - Puerto del IS (normalmente 9443)
+-->
+<api xmlns="http://ws.apache.org/ns/synapse"
+     name="{{API_NAME}}"
+     context="{{API_CONTEXT}}/{{API_VERSION}}">
+
+    <!-- Recurso protegido: GET -->
+    <resource methods="GET" uri-template="/*">
+        <inSequence>
+            <sequence key="TokenValidationSequence"/>
+            <header name="Authorization" scope="transport" action="remove"/>
+            <send>
+                <endpoint>
+                    <http method="GET" uri-template="{{BACKEND_URL}}{+rest.url.postfix}"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CommonErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- Recurso protegido: POST -->
+    <resource methods="POST" uri-template="/*">
+        <inSequence>
+            <sequence key="TokenValidationSequence"/>
+            <header name="Authorization" scope="transport" action="remove"/>
+            <send>
+                <endpoint>
+                    <http method="POST" uri-template="{{BACKEND_URL}}{+rest.url.postfix}"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CommonErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- Recurso protegido: PUT -->
+    <resource methods="PUT" uri-template="/*">
+        <inSequence>
+            <sequence key="TokenValidationSequence"/>
+            <header name="Authorization" scope="transport" action="remove"/>
+            <send>
+                <endpoint>
+                    <http method="PUT" uri-template="{{BACKEND_URL}}{+rest.url.postfix}"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CommonErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- Recurso protegido: DELETE -->
+    <resource methods="DELETE" uri-template="/*">
+        <inSequence>
+            <sequence key="TokenValidationSequence"/>
+            <header name="Authorization" scope="transport" action="remove"/>
+            <send>
+                <endpoint>
+                    <http method="DELETE" uri-template="{{BACKEND_URL}}{+rest.url.postfix}"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CommonErrorHandler"/>
+        </faultSequence>
+    </resource>
+</api>

@@ -12,6 +12,8 @@ resources:
   - streaming-integrator/deployment.yaml
   - streaming-integrator/service.yaml
 
-commonLabels:
-  app.kubernetes.io/part-of: wso2-platform
-  app.kubernetes.io/managed-by: kustomize
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: wso2-platform
+      app.kubernetes.io/managed-by: kustomize
+    includeSelectors: true

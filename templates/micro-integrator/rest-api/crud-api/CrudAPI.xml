@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: API REST CRUD
+  Producto:  WSO2 Micro Integrator
+  
+  Variables a reemplazar:
+    {{API_NAME}}     - Nombre de la API (ej: ClientesAPI)
+    {{API_CONTEXT}}  - Contexto URL (ej: /clientes)
+    {{API_VERSION}}  - Versión (ej: v1)
+-->
+<api xmlns="http://ws.apache.org/ns/synapse"
+     name="{{API_NAME}}"
+     context="{{API_CONTEXT}}/{{API_VERSION}}">
+
+    <!-- Health Check -->
+    <resource methods="GET" uri-template="/health">
+        <inSequence>
+            <payloadFactory media-type="json">
+                <format>{"status":"UP","api":"{{API_NAME}}","version":"{{API_VERSION}}"}</format>
+            </payloadFactory>
+            <respond/>
+        </inSequence>
+    </resource>
+
+    <!-- GET - Listar todos los items -->
+    <resource methods="GET" uri-template="/items">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="GET_ALL"/>
+                <property name="CorrelationId" expression="get-property('MessageID')"/>
+            </log>
+            <send>
+                <endpoint key="{{API_NAME}}_BackendEP"/>
+            </send>
+        </inSequence>
+        <outSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="GET_ALL_RESPONSE"/>
+                <property name="StatusCode" expression="get-property('axis2','HTTP_SC')"/>
+            </log>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="{{API_NAME}}_ErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- GET - Obtener un item por ID -->
+    <resource methods="GET" uri-template="/items/{id}">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="GET_BY_ID"/>
+                <property name="ItemId" expression="get-property('uri.var.id')"/>
+            </log>
+            <send>
+                <endpoint key="{{API_NAME}}_BackendEP"/>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="{{API_NAME}}_ErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- POST - Crear un item -->
+    <resource methods="POST" uri-template="/items">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="CREATE"/>
+            </log>
+            <!-- Validar que el body no está vacío -->
+            <filter xpath="boolean(json-eval($))">
+                <then>
+                    <send>
+                        <endpoint key="{{API_NAME}}_BackendEP"/>
+                    </send>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{"error":"BAD_REQUEST","message":"El body de la petición no puede estar vacío"}</format>
+                    </payloadFactory>
+                    <property name="HTTP_SC" value="400" scope="axis2"/>
+                    <respond/>
+                </else>
+            </filter>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="{{API_NAME}}_ErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- PUT - Actualizar un item -->
+    <resource methods="PUT" uri-template="/items/{id}">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="UPDATE"/>
+                <property name="ItemId" expression="get-property('uri.var.id')"/>
+            </log>
+            <send>
+                <endpoint key="{{API_NAME}}_BackendEP"/>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="{{API_NAME}}_ErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+    <!-- DELETE - Eliminar un item -->
+    <resource methods="DELETE" uri-template="/items/{id}">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Operation" value="DELETE"/>
+                <property name="ItemId" expression="get-property('uri.var.id')"/>
+            </log>
+            <send>
+                <endpoint key="{{API_NAME}}_BackendEP"/>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="{{API_NAME}}_ErrorHandler"/>
+        </faultSequence>
+    </resource>
+
+</api>

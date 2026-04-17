@@ -1,0 +1,9 @@
+# Variables para la plantilla Store and Forward
+variables:
+  API_NAME: "OrderIngestionAPI"
+  API_CONTEXT: "/orders/ingest"
+  STORE_NAME: "OrderMessageStore"
+  PROCESSOR_NAME: "OrderForwardProcessor"
+  BACKEND_URL: "http://order-service:8080/api/orders"
+  RETRY_INTERVAL: "5000"
+  MAX_DELIVERY_ATTEMPTS: "5"

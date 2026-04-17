@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Scheduled Forwarding Message Processor
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  Consume mensajes del Message Store y los reenvía al backend.
+  Reintenta automáticamente en caso de fallo.
+
+  Variables:
+    {{PROCESSOR_NAME}}          - Nombre del processor
+    {{STORE_NAME}}              - Message Store asociado
+    {{BACKEND_URL}}             - URL del backend destino
+    {{RETRY_INTERVAL}}          - Intervalo entre polls/reintentos (ms)
+    {{MAX_DELIVERY_ATTEMPTS}}   - Intentos máximos antes de descartar
+-->
+<messageProcessor xmlns="http://ws.apache.org/ns/synapse"
+                  name="{{PROCESSOR_NAME}}"
+                  class="org.apache.synapse.message.processor.impl.forwarder.ScheduledMessageForwardingProcessor"
+                  messageStore="{{STORE_NAME}}"
+                  targetEndpoint="StoreForwardBackendEP">
+
+    <!-- Intervalo de polling en milisegundos -->
+    <parameter name="interval">{{RETRY_INTERVAL}}</parameter>
+
+    <!-- Reintentos máximos (-1 = infinito) -->
+    <parameter name="max.delivery.attempts">{{MAX_DELIVERY_ATTEMPTS}}</parameter>
+
+    <!-- Desactivar el processor si se agotan los reintentos -->
+    <parameter name="is.active">true</parameter>
+
+    <!-- Secuencia a ejecutar en caso de fallo definitivo -->
+    <parameter name="message.processor.fault.sequence">StoreForwardFaultSeq</parameter>
+
+    <!-- Secuencia a ejecutar cuando el mensaje se entrega exitosamente -->
+    <parameter name="message.processor.reply.sequence">StoreForwardReplySeq</parameter>
+
+    <!-- Endpoint destino -->
+    <!-- NOTA: Definir el endpoint por separado o inline -->
+</messageProcessor>

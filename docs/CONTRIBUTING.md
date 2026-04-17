@@ -5,6 +5,7 @@
 1. Lee la [Guía de Git Workflow](GIT_WORKFLOW.md)
 2. Revisa la [Arquitectura](ARCHITECTURE.md)
 3. Asegúrate de tener el entorno configurado: `./scripts/setup.sh`
+4. Revisa el [Catálogo de Plantillas](../templates/catalog.yaml) antes de crear artefactos nuevos
 
 ## Requisitos del Entorno
 
@@ -17,6 +18,44 @@
 | Ballerina | 2201.9.0 | ❌ (solo para proyectos Ballerina) |
 | xmllint | cualquier | ❌ (recomendado para validación XML) |
 | Node.js | 18+ | ❌ (solo para tests) |
+| Minikube | 1.30+ | ❌ (para demos locales) |
+
+### Entorno Local con Minikube
+
+Para probar despliegues en Kubernetes sin un cluster remoto:
+
+```bash
+# Iniciar Minikube (recomendado: 4 CPUs y 8 GB para el stack completo)
+minikube start --memory=8192 --cpus=4
+
+# Desplegar un producto específico (construye + despliega)
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build --product micro-integrator
+
+# Desplegar todo el stack
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build
+
+# Ver estado
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --status
+
+# Acceder a servicios
+kubectl port-forward svc/wso2-micro-integrator -n wso2-dev 8290:8290
+kubectl port-forward svc/wso2-api-manager -n wso2-dev 9443:9443
+
+# Limpiar
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --clean
+```
+
+> **Windows**: Usa Git Bash, **no** WSL. WSL no tiene acceso al Minikube de Windows.
+> Con solo 2 CPUs de Minikube, usa `--product` para desplegar un solo producto.
+
+### Usando las Plantillas
+
+Consulta `templates/catalog.yaml` para ver la lista completa. Para usar una plantilla:
+
+1. Busca la plantilla en el catálogo por producto, categoría o tags
+2. Copia los artefactos de `templates/<path>/` al directorio correspondiente en `projects/`
+3. Sigue el README de la plantilla para personalizar valores
+4. Adapta los endpoints y parámetros para tu caso de uso
 
 ## Estructura de Desarrollo por Producto
 
@@ -100,3 +139,47 @@ Usar el template de [Feature Request](../.github/ISSUE_TEMPLATE/feature_request.
 - Sistemas involucrados
 - Diagramas de flujo si aplica
 - Impacto en otros productos
+
+## Troubleshooting Común
+
+### Pod no arranca (Insufficient CPU)
+
+Minikube con 2 CPUs no puede correr los 4 productos simultáneamente. Usa `--product` para desplegar solo uno:
+
+```bash
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build --product micro-integrator
+```
+
+O aumenta los recursos de Minikube:
+
+```bash
+minikube stop
+minikube delete
+minikube start --cpus=4 --memory=8192
+```
+
+### Pod en CrashLoopBackOff
+
+```bash
+# Ver logs del pod
+kubectl logs deployment/wso2-<producto> -n wso2-dev --previous
+
+# Ver eventos del pod
+kubectl describe pod -l app.kubernetes.io/name=<producto> -n wso2-dev
+```
+
+### Imágenes Docker no se encuentran (ErrImagePull)
+
+Asegúrate de usar `--build` para construir las imágenes directamente en Minikube:
+
+```bash
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build
+```
+
+### WSL no encuentra Minikube
+
+El script `minikube-demo.sh` requiere **Git Bash**, no WSL. WSL no puede ver el cluster de Minikube que corre en Windows.
+
+### Kustomize genera warnings de commonLabels
+
+Este proyecto ya usa la sintaxis `labels` + `includeSelectors: true`. Si ves warnings en otro overlay, actualiza la kustomization.yaml correspondiente.

@@ -1,0 +1,155 @@
+-- =============================================================================
+-- Plantilla: Consumidor de Eventos Kafka
+-- Producto:  WSO2 Streaming Integrator
+--
+-- Variables:
+--   {{APP_NAME}}        - Nombre de la aplicación
+--   {{KAFKA_BOOTSTRAP}} - Servidores Kafka (ej: kafka:9092)
+--   {{KAFKA_TOPIC}}     - Topic a consumir
+--   {{CONSUMER_GROUP}}  - Consumer Group ID
+-- =============================================================================
+
+@App:name("{{APP_NAME}}")
+@App:description("Consumidor de eventos desde Kafka - Generado por plantilla TICXAR")
+
+-- =============================================================================
+-- Fuente: Topic de Kafka
+-- PERSONALIZAR: Ajustar el schema según los campos del evento
+-- =============================================================================
+@source(
+    type = 'kafka',
+    topic.list = '{{KAFKA_TOPIC}}',
+    bootstrap.servers = '{{KAFKA_BOOTSTRAP}}',
+    group.id = '{{CONSUMER_GROUP}}',
+    threading.option = 'single.thread',
+    is.binary.message = 'false',
+    optional.configuration = 'auto.offset.reset:latest',
+    @map(type = 'json')
+)
+define stream InputEventStream (
+    eventId string,
+    eventType string,
+    payload string,
+    timestamp long
+);
+
+-- =============================================================================
+-- Stream intermedio para eventos procesados
+-- =============================================================================
+define stream ProcessedEventStream (
+    eventId string,
+    eventType string,
+    payload string,
+    timestamp long,
+    processedAt long
+);
+
+-- =============================================================================
+-- Stream para eventos con error
+-- =============================================================================
+define stream ErrorEventStream (
+    eventId string,
+    eventType string,
+    errorMessage string,
+    timestamp long
+);
+
+-- =============================================================================
+-- Sink: Log de eventos procesados (reemplazar con HTTP/DB según necesidad)
+-- =============================================================================
+@sink(
+    type = 'log',
+    prefix = '{{APP_NAME}} - Procesado',
+    @map(type = 'json')
+)
+define stream OutputEventStream (
+    eventId string,
+    eventType string,
+    payload string,
+    processedAt long
+);
+
+-- =============================================================================
+-- Sink: Log de errores
+-- =============================================================================
+@sink(
+    type = 'log',
+    prefix = '{{APP_NAME}} - Error',
+    priority = 'WARN',
+    @map(type = 'json')
+)
+define stream ErrorLogStream (
+    eventId string,
+    eventType string,
+    errorMessage string,
+    timestamp long
+);
+
+-- =============================================================================
+-- Ejemplo de Sink HTTP (descomentar para enviar a endpoint REST)
+-- =============================================================================
+-- @sink(
+--     type = 'http',
+--     publisher.url = 'http://backend-service:8080/api/events',
+--     method = 'POST',
+--     headers = "'Content-Type:application/json'",
+--     @map(type = 'json')
+-- )
+-- define stream HttpOutputEventStream (
+--     eventId string,
+--     eventType string,
+--     payload string,
+--     processedAt long
+-- );
+
+-- =============================================================================
+-- Query: Procesar eventos válidos
+-- PERSONALIZAR: Agregar lógica de transformación/filtrado
+-- =============================================================================
+@info(name = 'processValidEvents')
+from InputEventStream[not(eventId is null) and not(eventType is null)]
+select
+    eventId,
+    eventType,
+    payload,
+    timestamp,
+    currentTimeMillis() as processedAt
+insert into ProcessedEventStream;
+
+-- =============================================================================
+-- Query: Detectar eventos inválidos
+-- =============================================================================
+@info(name = 'detectInvalidEvents')
+from InputEventStream[eventId is null or eventType is null]
+select
+    ifThenElse(eventId is null, 'UNKNOWN', eventId) as eventId,
+    ifThenElse(eventType is null, 'UNKNOWN', eventType) as eventType,
+    'Evento con campos obligatorios nulos' as errorMessage,
+    currentTimeMillis() as timestamp
+insert into ErrorEventStream;
+
+-- =============================================================================
+-- Query: Enviar eventos procesados al output
+-- =============================================================================
+@info(name = 'outputProcessedEvents')
+from ProcessedEventStream
+select eventId, eventType, payload, processedAt
+insert into OutputEventStream;
+
+-- =============================================================================
+-- Query: Enviar errores al log
+-- =============================================================================
+@info(name = 'logErrors')
+from ErrorEventStream
+select eventId, eventType, errorMessage, timestamp
+insert into ErrorLogStream;
+
+-- =============================================================================
+-- Ejemplo: Ventana de tiempo para contar eventos por tipo (métricas)
+-- Descomentar si se necesita monitoreo de throughput
+-- =============================================================================
+-- @info(name = 'eventCountByType')
+-- from ProcessedEventStream#window.timeBatch(60 sec)
+-- select eventType, count() as eventCount
+-- group by eventType
+-- insert into MetricsStream;

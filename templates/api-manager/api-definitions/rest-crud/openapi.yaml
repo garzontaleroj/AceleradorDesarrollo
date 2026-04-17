@@ -1,0 +1,214 @@
+openapi: "3.0.3"
+info:
+  title: "{{API_TITLE}}"
+  description: "{{API_DESCRIPTION}}"
+  version: "1.0.0"
+  contact:
+    name: "TICXAR - Fábrica de Desarrollo"
+    email: "desarrollo@ticxar.com"
+
+servers:
+  - url: "{{BASE_PATH}}"
+    description: "Servidor principal"
+
+paths:
+  /{{RESOURCE_NAME_PLURAL}}:
+    get:
+      summary: "Listar {{RESOURCE_NAME_PLURAL}}"
+      operationId: "list{{RESOURCE_NAME_PLURAL}}"
+      tags:
+        - "{{RESOURCE_NAME_PLURAL}}"
+      parameters:
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        "200":
+          description: "Lista de {{RESOURCE_NAME_PLURAL}}"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/{{RESOURCE_NAME}}"
+                  total:
+                    type: integer
+                  offset:
+                    type: integer
+                  limit:
+                    type: integer
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      summary: "Crear {{RESOURCE_NAME}}"
+      operationId: "create{{RESOURCE_NAME}}"
+      tags:
+        - "{{RESOURCE_NAME_PLURAL}}"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/{{RESOURCE_NAME}}Input"
+      responses:
+        "201":
+          description: "{{RESOURCE_NAME}} creado"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/{{RESOURCE_NAME}}"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /{{RESOURCE_NAME_PLURAL}}/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+
+    get:
+      summary: "Obtener {{RESOURCE_NAME}} por ID"
+      operationId: "get{{RESOURCE_NAME}}"
+      tags:
+        - "{{RESOURCE_NAME_PLURAL}}"
+      responses:
+        "200":
+          description: "{{RESOURCE_NAME}} encontrado"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/{{RESOURCE_NAME}}"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      summary: "Actualizar {{RESOURCE_NAME}}"
+      operationId: "update{{RESOURCE_NAME}}"
+      tags:
+        - "{{RESOURCE_NAME_PLURAL}}"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/{{RESOURCE_NAME}}Input"
+      responses:
+        "200":
+          description: "{{RESOURCE_NAME}} actualizado"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/{{RESOURCE_NAME}}"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      summary: "Eliminar {{RESOURCE_NAME}}"
+      operationId: "delete{{RESOURCE_NAME}}"
+      tags:
+        - "{{RESOURCE_NAME_PLURAL}}"
+      responses:
+        "204":
+          description: "{{RESOURCE_NAME}} eliminado"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  schemas:
+    # PERSONALIZAR: Agregar campos específicos del recurso
+    {{RESOURCE_NAME}}:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    {{RESOURCE_NAME}}Input:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: string
+
+  responses:
+    BadRequest:
+      description: "Solicitud inválida"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: "BAD_REQUEST"
+            message: "Los datos proporcionados no son válidos"
+
+    NotFound:
+      description: "Recurso no encontrado"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: "NOT_FOUND"
+            message: "El recurso solicitado no existe"
+
+    InternalError:
+      description: "Error interno del servidor"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: "INTERNAL_ERROR"
+            message: "Error interno del servidor"

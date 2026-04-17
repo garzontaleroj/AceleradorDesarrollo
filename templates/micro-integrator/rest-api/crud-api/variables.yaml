@@ -1,0 +1,42 @@
+# Variables de configuración para la plantilla API REST CRUD
+# Reemplazar estos valores al crear una nueva API
+
+variables:
+  API_NAME:
+    description: "Nombre de la API (PascalCase, sin espacios)"
+    example: "ClientesAPI"
+    required: true
+    pattern: "^[A-Z][a-zA-Z0-9]+API$"
+
+  API_CONTEXT:
+    description: "Contexto URL de la API (empezar con /)"
+    example: "/clientes"
+    required: true
+    pattern: "^/[a-z][a-z0-9-]*$"
+
+  API_VERSION:
+    description: "Versión de la API"
+    example: "v1"
+    required: true
+    default: "v1"
+    pattern: "^v[0-9]+$"
+
+  BACKEND_URL:
+    description: "URL base del servicio backend"
+    example: "http://backend-service:8080/api"
+    required: true
+    pattern: "^https?://.+"
+
+# Archivos donde aplicar las sustituciones
+files:
+  - path: CrudAPI.xml
+    copy_to: "projects/micro-integrator/src/main/synapse-config/api/{{API_NAME}}.xml"
+    variables: [API_NAME, API_CONTEXT, API_VERSION]
+
+  - path: CrudBackendEP.xml
+    copy_to: "projects/micro-integrator/src/main/synapse-config/endpoints/{{API_NAME}}_BackendEP.xml"
+    variables: [API_NAME, BACKEND_URL]
+
+  - path: CrudErrorHandler.xml
+    copy_to: "projects/micro-integrator/src/main/synapse-config/sequences/{{API_NAME}}_ErrorHandler.xml"
+    variables: [API_NAME]

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Content-Based Router
+  Producto:  WSO2 Micro Integrator
+  Patrón:    Enterprise Integration Pattern - Content-Based Router
+
+  Variables:
+    {{API_NAME}}      - Nombre de la API
+    {{API_CONTEXT}}   - Contexto URL
+    {{ROUTE_FIELD}}   - Expresión JSONPath del campo para enrutar (ej: $.type)
+    {{BACKEND_A_URL}} - URL del backend para ruta A
+    {{BACKEND_B_URL}} - URL del backend para ruta B
+-->
+<api xmlns="http://ws.apache.org/ns/synapse"
+     name="{{API_NAME}}"
+     context="{{API_CONTEXT}}">
+
+    <resource methods="POST" uri-template="/">
+        <inSequence>
+            <log level="custom">
+                <property name="API" value="{{API_NAME}}"/>
+                <property name="Pattern" value="ContentBasedRouter"/>
+                <property name="RouteField" expression="json-eval({{ROUTE_FIELD}})"/>
+            </log>
+
+            <!-- Extraer el campo de enrutamiento -->
+            <property name="ROUTE_VALUE"
+                      expression="json-eval({{ROUTE_FIELD}})"
+                      scope="default"
+                      type="STRING"/>
+
+            <switch source="get-property('ROUTE_VALUE')">
+                <!-- Ruta A -->
+                <case regex="A">
+                    <log level="custom">
+                        <property name="Routing" value="Enviando a Backend A"/>
+                    </log>
+                    <send>
+                        <endpoint>
+                            <http method="post" uri-template="{{BACKEND_A_URL}}"/>
+                        </endpoint>
+                    </send>
+                </case>
+
+                <!-- Ruta B -->
+                <case regex="B">
+                    <log level="custom">
+                        <property name="Routing" value="Enviando a Backend B"/>
+                    </log>
+                    <send>
+                        <endpoint>
+                            <http method="post" uri-template="{{BACKEND_B_URL}}"/>
+                        </endpoint>
+                    </send>
+                </case>
+
+                <!-- Ruta desconocida -->
+                <default>
+                    <log level="custom">
+                        <property name="Routing" value="Tipo no reconocido"/>
+                        <property name="Value" expression="get-property('ROUTE_VALUE')"/>
+                    </log>
+                    <payloadFactory media-type="json">
+                        <format>
+                            {
+                                "error": "INVALID_ROUTE",
+                                "message": "Tipo no reconocido. Valores válidos: A, B",
+                                "received": "$1"
+                            }
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="get-property('ROUTE_VALUE')"/>
+                        </args>
+                    </payloadFactory>
+                    <property name="HTTP_SC" value="400" scope="axis2"/>
+                    <respond/>
+                </default>
+            </switch>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence>
+            <payloadFactory media-type="json">
+                <format>{"error":"INTERNAL_ERROR","message":"Error procesando la petición"}</format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="500" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+
+</api>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Service Provider para SPA con OAuth2 + PKCE
+  Producto:  WSO2 Identity Server
+
+  Variables:
+    {{SP_NAME}}      - Nombre del Service Provider
+    {{CALLBACK_URL}} - URL de callback (ej: http://localhost:3000/callback)
+    
+  Importar en IS:
+    Management Console → Service Providers → Add → File Based Configuration
+-->
+<ServiceProvider>
+    <ApplicationName>{{SP_NAME}}</ApplicationName>
+    <Description>Service Provider para SPA - Generado desde plantilla TICXAR</Description>
+
+    <InboundAuthenticationConfig>
+        <InboundAuthenticationRequestConfigs>
+            <InboundAuthenticationRequestConfig>
+                <InboundAuthKey>{{SP_NAME}}_oauth2</InboundAuthKey>
+                <InboundAuthType>oauth2</InboundAuthType>
+                <Properties>
+                    <Property name="oauthConsumerSecret"></Property>
+                </Properties>
+                <InboundConfiguration>
+                    <OAuthAppDO>
+                        <CallbackUrl>regexp=({{CALLBACK_URL}})</CallbackUrl>
+                        <GrantTypes>authorization_code refresh_token</GrantTypes>
+                        <OAuthVersion>OAuth-2.0</OAuthVersion>
+                        <PkceMandatory>true</PkceMandatory>
+                        <PkceSupportPlain>false</PkceSupportPlain>
+                        <ApplicationAccessTokenExpiryTime>3600</ApplicationAccessTokenExpiryTime>
+                        <UserAccessTokenExpiryTime>3600</UserAccessTokenExpiryTime>
+                        <RefreshTokenExpiryTime>86400</RefreshTokenExpiryTime>
+                        <IdTokenExpiryTime>3600</IdTokenExpiryTime>
+                        <TokenType>JWT</TokenType>
+                    </OAuthAppDO>
+                </InboundConfiguration>
+            </InboundAuthenticationRequestConfig>
+        </InboundAuthenticationRequestConfigs>
+    </InboundAuthenticationConfig>
+
+    <ClaimConfig>
+        <AlwaysSendMappedLocalSubjectId>true</AlwaysSendMappedLocalSubjectId>
+        <RequestedClaims>
+            <RequestedClaim>
+                <ClaimUri>http://wso2.org/claims/emailaddress</ClaimUri>
+                <Mandatory>false</Mandatory>
+            </RequestedClaim>
+            <RequestedClaim>
+                <ClaimUri>http://wso2.org/claims/fullname</ClaimUri>
+                <Mandatory>false</Mandatory>
+            </RequestedClaim>
+            <RequestedClaim>
+                <ClaimUri>http://wso2.org/claims/role</ClaimUri>
+                <Mandatory>false</Mandatory>
+            </RequestedClaim>
+        </RequestedClaims>
+    </ClaimConfig>
+
+    <LocalAndOutBoundAuthenticationConfig>
+        <AuthenticationSteps>
+            <AuthenticationStep>
+                <StepOrder>1</StepOrder>
+                <LocalAuthenticatorConfigs>
+                    <LocalAuthenticatorConfig>
+                        <Name>BasicAuthenticator</Name>
+                        <DisplayName>Username &amp; Password</DisplayName>
+                        <IsEnabled>true</IsEnabled>
+                    </LocalAuthenticatorConfig>
+                </LocalAuthenticatorConfigs>
+            </AuthenticationStep>
+        </AuthenticationSteps>
+    </LocalAndOutBoundAuthenticationConfig>
+</ServiceProvider>

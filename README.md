@@ -85,7 +85,16 @@ AceleradorDesarrollo/
 │   ├── build.sh                       # Construir imágenes Docker
 │   ├── deploy.sh                      # Desplegar a K8s
 │   ├── test.sh                        # Ejecutar tests
-│   └── smoke-test.sh                  # Smoke tests post-deploy
+│   ├── smoke-test.sh                  # Smoke tests post-deploy
+│   └── minikube-demo.sh               # Demo local con Minikube
+│
+├── templates/                         # Base de conocimiento (plantillas)
+│   ├── catalog.yaml                   # Índice central del catálogo
+│   ├── micro-integrator/              # 6 plantillas MI
+│   ├── api-manager/                   # 2 plantillas APIM
+│   ├── identity-server/               # 3 plantillas IS
+│   ├── streaming-integrator/          # 1 plantilla SI
+│   └── ballerina/                     # 1 plantilla Ballerina
 │
 ├── tests/
 │   ├── unit/                          # Validación estructura + XML
@@ -118,6 +127,22 @@ cd AceleradorDesarrollo
 ```bash
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
 ```
+
+### 2b. Alternativa: Demo con Minikube (Kubernetes local)
+
+```bash
+# Iniciar Minikube
+minikube start --memory=8192 --cpus=4
+
+# Construir y desplegar un producto (en Windows usar Git Bash, NO WSL)
+& "C:\Program Files\Git\bin\bash.exe" scripts/minikube-demo.sh --build --product micro-integrator
+
+# Acceder al servicio
+kubectl port-forward svc/wso2-micro-integrator -n wso2-dev 8290:8290
+curl http://localhost:8290/services
+```
+
+Ver [docs/ENVIRONMENTS.md](docs/ENVIRONMENTS.md#local-minikube) para detalles del entorno local.
 
 ### 3. Crear una rama y desarrollar
 
@@ -160,6 +185,7 @@ Al hacer merge a `main`, el CD despliega automáticamente a DEV.
 | `deploy.sh` | Desplegar a K8s | `./scripts/deploy.sh qa --product micro-integrator` |
 | `test.sh` | Ejecutar tests | `./scripts/test.sh unit` |
 | `smoke-test.sh` | Smoke tests | `./scripts/smoke-test.sh dev` |
+| `minikube-demo.sh` | Demo local con Minikube | `scripts/minikube-demo.sh --build --product mi` |
 
 ## GitHub Actions Workflows
 
@@ -173,10 +199,24 @@ Al hacer merge a `main`, el CD despliega automáticamente a DEV.
 
 ## Documentación
 
-- [Arquitectura](docs/ARCHITECTURE.md) — Diagrama y flujos de datos
+- [Arquitectura](docs/ARCHITECTURE.md) — Diagrama, flujos de datos y puertos K8s
 - [Git Workflow](docs/GIT_WORKFLOW.md) — GitHub Flow + Conventional Commits
-- [Contribución](docs/CONTRIBUTING.md) — Guía para desarrolladores
-- [Ambientes](docs/ENVIRONMENTS.md) — Configuración por ambiente
+- [Contribución](docs/CONTRIBUTING.md) — Guía para desarrolladores + troubleshooting
+- [Ambientes](docs/ENVIRONMENTS.md) — Configuración por ambiente (incluye LOCAL/Minikube)
+- [Catálogo de Plantillas](templates/README.md) — 15 plantillas reutilizables de integración
+
+## Catálogo de Plantillas
+
+El acelerador incluye **15 plantillas reutilizables** en `templates/` que cubren los patrones
+de integración más comunes. Consulta `templates/catalog.yaml` para el índice completo.
+
+| Producto | Plantillas | Ejemplo |
+|----------|-----------|----------|
+| Micro Integrator | 6 | API CRUD, Content-Based Router, Store & Forward |
+| API Manager | 2 | Definición OpenAPI, Rate Limiting |
+| Identity Server | 3 | SPA OAuth2/OIDC, Azure AD, 2FA adaptativo |
+| Streaming Integrator | 1 | Consumidor Kafka |
+| Ballerina | 1 | Servicio HTTP |
 
 ## Requisitos
 
@@ -188,6 +228,7 @@ Al hacer merge a `main`, el CD despliega automáticamente a DEV.
 | Git | 2.40+ |
 | Ballerina (opcional) | 2201.9.0 |
 | Node.js (para tests) | 18+ |
+| Minikube (para demos) | 1.30+ |
 
 ## Equipos y CODEOWNERS
 

@@ -8,8 +8,10 @@ resources:
   - ../../base
   - namespace.yaml
 
-commonLabels:
-  environment: staging
+labels:
+  - pairs:
+      environment: staging
+    includeSelectors: true
 
 patches:
   - target:

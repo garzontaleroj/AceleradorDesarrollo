@@ -8,8 +8,10 @@ resources:
   - ../../base
   - namespace.yaml
 
-commonLabels:
-  environment: prod
+labels:
+  - pairs:
+      environment: prod
+    includeSelectors: true
 
 patches:
   - target:

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Error Handler para API CRUD
+  
+  Variables a reemplazar:
+    {{API_NAME}} - Nombre de la API (ej: ClientesAPI)
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="{{API_NAME}}_ErrorHandler">
+
+    <log level="custom">
+        <property name="API" value="{{API_NAME}}"/>
+        <property name="Sequence" value="ErrorHandler"/>
+        <property name="ErrorCode" expression="get-property('ERROR_CODE')"/>
+        <property name="ErrorMessage" expression="get-property('ERROR_MESSAGE')"/>
+        <property name="ErrorDetail" expression="get-property('ERROR_DETAIL')"/>
+    </log>
+
+    <switch source="get-property('ERROR_CODE')">
+        <!-- Timeout del backend -->
+        <case regex="101504|101505|101506|101507">
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": "GATEWAY_TIMEOUT",
+                        "code": 504,
+                        "message": "El servicio backend no respondió a tiempo",
+                        "api": "{{API_NAME}}"
+                    }
+                </format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="504" scope="axis2"/>
+        </case>
+
+        <!-- Backend no disponible -->
+        <case regex="101500|101501|101508">
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": "SERVICE_UNAVAILABLE",
+                        "code": 503,
+                        "message": "El servicio backend no está disponible",
+                        "api": "{{API_NAME}}"
+                    }
+                </format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="503" scope="axis2"/>
+        </case>
+
+        <!-- Error genérico -->
+        <default>
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "error": "INTERNAL_ERROR",
+                        "code": 500,
+                        "message": "Error interno del servidor",
+                        "api": "{{API_NAME}}"
+                    }
+                </format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="500" scope="axis2"/>
+        </default>
+    </switch>
+
+    <property name="messageType" value="application/json" scope="axis2"/>
+    <respond/>
+
+</sequence>

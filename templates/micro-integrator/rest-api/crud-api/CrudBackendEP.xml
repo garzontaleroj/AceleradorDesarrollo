@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Endpoint Backend para API CRUD
+  
+  Variables a reemplazar:
+    {{API_NAME}}    - Nombre de la API (ej: ClientesAPI)
+    {{BACKEND_URL}} - URL del backend (ej: http://backend:8080/api)
+-->
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="{{API_NAME}}_BackendEP">
+    <http method="get" uri-template="{{BACKEND_URL}}/{uri.var.*}">
+        <timeout>
+            <duration>30000</duration>
+            <responseAction>fault</responseAction>
+        </timeout>
+        <suspendOnFailure>
+            <errorCodes>101500,101501,101506,101507,101508</errorCodes>
+            <initialDuration>1000</initialDuration>
+            <progressionFactor>2</progressionFactor>
+            <maximumDuration>60000</maximumDuration>
+        </suspendOnFailure>
+        <markForSuspension>
+            <errorCodes>101504,101505</errorCodes>
+            <retriesBeforeSuspension>3</retriesBeforeSuspension>
+            <retryDelay>1000</retryDelay>
+        </markForSuspension>
+    </http>
+</endpoint>

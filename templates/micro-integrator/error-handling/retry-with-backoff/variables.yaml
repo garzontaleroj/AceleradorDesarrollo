@@ -1,0 +1,11 @@
+# Variables para la plantilla Retry con Exponential Backoff
+variables:
+  API_NAME: "ResilientOrderAPI"
+  API_CONTEXT: "/orders"
+  BACKEND_URL: "http://order-service:8080/api/orders"
+  INITIAL_DURATION: "1000"
+  PROGRESSION_FACTOR: "2"
+  MAX_DURATION: "60000"
+  RETRY_COUNT: "3"
+  RETRY_DELAY: "1000"
+  TIMEOUT_DURATION: "5000"

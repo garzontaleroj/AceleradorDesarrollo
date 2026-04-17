@@ -8,8 +8,10 @@ resources:
   - ../../base
   - namespace.yaml
 
-commonLabels:
-  environment: qa
+labels:
+  - pairs:
+      environment: qa
+    includeSelectors: true
 
 patches:
   - target:

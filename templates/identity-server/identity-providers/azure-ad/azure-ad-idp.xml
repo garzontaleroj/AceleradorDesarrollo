@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Identity Provider — Federación con Azure AD (Entra ID)
+  Producto:  WSO2 Identity Server
+
+  Variables:
+    {{AZURE_TENANT_ID}}     - Directory (tenant) ID
+    {{AZURE_CLIENT_ID}}     - Application (client) ID
+    {{AZURE_CLIENT_SECRET}} - Client Secret
+    {{IS_HOST}}             - Hostname del IS (ej: is.ejemplo.com)
+-->
+<IdentityProvider>
+    <IdentityProviderName>AzureAD</IdentityProviderName>
+    <DisplayName>Microsoft Azure AD</DisplayName>
+    <IdentityProviderDescription>Federación OIDC con Microsoft Entra ID</IdentityProviderDescription>
+    <Alias>https://login.microsoftonline.com/{{AZURE_TENANT_ID}}/v2.0</Alias>
+    <IsPrimary>false</IsPrimary>
+    <IsEnabled>true</IsEnabled>
+    <IsFederationHub>false</IsFederationHub>
+
+    <FederatedAuthenticatorConfigs>
+        <FederatedAuthenticatorConfig>
+            <Name>OpenIDConnectAuthenticator</Name>
+            <DisplayName>OpenID Connect</DisplayName>
+            <IsEnabled>true</IsEnabled>
+            <Properties>
+                <Property>
+                    <Name>ClientId</Name>
+                    <Value>{{AZURE_CLIENT_ID}}</Value>
+                </Property>
+                <Property>
+                    <Name>ClientSecret</Name>
+                    <Value>{{AZURE_CLIENT_SECRET}}</Value>
+                </Property>
+                <Property>
+                    <Name>OAuth2AuthzEPUrl</Name>
+                    <Value>https://login.microsoftonline.com/{{AZURE_TENANT_ID}}/oauth2/v2.0/authorize</Value>
+                </Property>
+                <Property>
+                    <Name>OAuth2TokenEPUrl</Name>
+                    <Value>https://login.microsoftonline.com/{{AZURE_TENANT_ID}}/oauth2/v2.0/token</Value>
+                </Property>
+                <Property>
+                    <Name>callbackUrl</Name>
+                    <Value>https://{{IS_HOST}}/commonauth</Value>
+                </Property>
+                <Property>
+                    <Name>Scopes</Name>
+                    <Value>openid profile email</Value>
+                </Property>
+                <Property>
+                    <Name>IsUserIdInClaims</Name>
+                    <Value>true</Value>
+                </Property>
+                <Property>
+                    <Name>UserInfoEndpoint</Name>
+                    <Value>https://graph.microsoft.com/oidc/userinfo</Value>
+                </Property>
+            </Properties>
+        </FederatedAuthenticatorConfig>
+    </FederatedAuthenticatorConfigs>
+
+    <ClaimConfig>
+        <ClaimMappings>
+            <ClaimMapping>
+                <RemoteClaim>
+                    <ClaimUri>preferred_username</ClaimUri>
+                </RemoteClaim>
+                <LocalClaim>
+                    <ClaimUri>http://wso2.org/claims/emailaddress</ClaimUri>
+                </LocalClaim>
+            </ClaimMapping>
+            <ClaimMapping>
+                <RemoteClaim>
+                    <ClaimUri>name</ClaimUri>
+                </RemoteClaim>
+                <LocalClaim>
+                    <ClaimUri>http://wso2.org/claims/fullname</ClaimUri>
+                </LocalClaim>
+            </ClaimMapping>
+            <ClaimMapping>
+                <RemoteClaim>
+                    <ClaimUri>given_name</ClaimUri>
+                </RemoteClaim>
+                <LocalClaim>
+                    <ClaimUri>http://wso2.org/claims/givenname</ClaimUri>
+                </LocalClaim>
+            </ClaimMapping>
+            <ClaimMapping>
+                <RemoteClaim>
+                    <ClaimUri>family_name</ClaimUri>
+                </RemoteClaim>
+                <LocalClaim>
+                    <ClaimUri>http://wso2.org/claims/lastname</ClaimUri>
+                </LocalClaim>
+            </ClaimMapping>
+        </ClaimMappings>
+        <RoleClaimUri>roles</RoleClaimUri>
+        <UserIdClaimUri>preferred_username</UserIdClaimUri>
+    </ClaimConfig>
+
+    <PermissionsAndRoleConfig>
+        <RoleMappings>
+            <!-- Mapear roles de Azure AD a roles locales de IS -->
+            <!-- Ejemplo:
+            <RoleMapping>
+                <RemoteRole>AzureAD_Admin</RemoteRole>
+                <LocalRole>Internal/admin</LocalRole>
+            </RoleMapping>
+            -->
+        </RoleMappings>
+    </PermissionsAndRoleConfig>
+
+    <JustInTimeProvisioningConfig>
+        <IsEnabled>true</IsEnabled>
+        <UserStoreClaimUri>PRIMARY</UserStoreClaimUri>
+        <ProvisioningEnabled>true</ProvisioningEnabled>
+    </JustInTimeProvisioningConfig>
+</IdentityProvider>

@@ -1,0 +1,199 @@
+# =============================================================================
+# Catálogo de Plantillas WSO2 — TICXAR AceleradorDesarrollo
+# =============================================================================
+# Este archivo es el índice central de todas las plantillas disponibles.
+# Los desarrolladores pueden consultar este catálogo para encontrar plantillas
+# reutilizables para sus proyectos de integración.
+# =============================================================================
+
+version: "1.0"
+last_updated: "2026-04-16"
+
+templates:
+
+  # =========================================================================
+  # MICRO INTEGRATOR
+  # =========================================================================
+
+  - id: mi-rest-crud
+    name: "API REST CRUD"
+    product: micro-integrator
+    category: rest-api
+    path: micro-integrator/rest-api/crud-api
+    description: >
+      API REST completa con operaciones CRUD (GET, POST, PUT, DELETE).
+      Incluye manejo de errores, logging y endpoint configurable.
+    difficulty: basico
+    tags: [rest, crud, api, beginner]
+    prerequisites: []
+    estimated_time: "15 min"
+
+  - id: mi-proxy-passthrough
+    name: "Proxy Pass-Through"
+    product: micro-integrator
+    category: rest-api
+    path: micro-integrator/rest-api/proxy-passthrough
+    description: >
+      Proxy transparente que reenvía peticiones a un backend sin transformación.
+      Útil como punto de entrada centralizado con logging.
+    difficulty: basico
+    tags: [proxy, passthrough, routing]
+    prerequisites: []
+    estimated_time: "10 min"
+
+  - id: mi-api-auth
+    name: "API con Autenticación OAuth2"
+    product: micro-integrator
+    category: rest-api
+    path: micro-integrator/rest-api/api-with-auth
+    description: >
+      API REST protegida con OAuth2 Bearer Token validation contra IS.
+    difficulty: intermedio
+    tags: [rest, oauth2, security, token]
+    prerequisites: [is-spa-oauth2]
+    estimated_time: "30 min"
+
+  - id: mi-content-router
+    name: "Content-Based Router"
+    product: micro-integrator
+    category: message-patterns
+    path: micro-integrator/message-patterns/content-based-router
+    description: >
+      Enruta mensajes a diferentes endpoints según el contenido del payload.
+      Implementa el patrón EIP Content-Based Router.
+    difficulty: intermedio
+    tags: [eip, routing, patterns, switch]
+    prerequisites: []
+    estimated_time: "20 min"
+
+  - id: mi-store-forward
+    name: "Store and Forward"
+    product: micro-integrator
+    category: message-patterns
+    path: micro-integrator/message-patterns/store-and-forward
+    description: >
+      Patrón de mensajería garantizada con Message Store y Message Processor.
+      Asegura entrega incluso si el backend está temporalmente no disponible.
+    difficulty: avanzado
+    tags: [eip, reliability, queue, guaranteed-delivery]
+    prerequisites: []
+    estimated_time: "45 min"
+
+  - id: mi-retry-backoff
+    name: "Retry con Exponential Backoff"
+    product: micro-integrator
+    category: error-handling
+    path: micro-integrator/error-handling/retry-with-backoff
+    description: >
+      Patrón de reintentos con backoff exponencial para llamadas a backends inestables.
+    difficulty: intermedio
+    tags: [error-handling, retry, resilience]
+    prerequisites: []
+    estimated_time: "20 min"
+
+  # =========================================================================
+  # API MANAGER
+  # =========================================================================
+
+  - id: apim-rest-crud
+    name: "Definición API CRUD OpenAPI 3.0"
+    product: api-manager
+    category: api-definitions
+    path: api-manager/api-definitions/rest-crud
+    description: >
+      Definición OpenAPI 3.0 completa para API CRUD estándar con schemas,
+      respuestas de error y documentación inline.
+    difficulty: basico
+    tags: [openapi, swagger, crud, definition]
+    prerequisites: []
+    estimated_time: "15 min"
+
+  - id: apim-rate-limiting
+    name: "Política de Rate Limiting"
+    product: api-manager
+    category: policies
+    path: api-manager/policies/rate-limiting
+    description: >
+      Política de limitación de tasa personalizada con diferentes niveles
+      (bronze, silver, gold, unlimited).
+    difficulty: intermedio
+    tags: [policy, throttling, rate-limit, security]
+    prerequisites: []
+    estimated_time: "15 min"
+
+  # =========================================================================
+  # IDENTITY SERVER
+  # =========================================================================
+
+  - id: is-spa-oauth2
+    name: "SPA con OAuth2/OIDC"
+    product: identity-server
+    category: service-providers
+    path: identity-server/service-providers/spa-oauth2
+    description: >
+      Configuración de Service Provider para Single Page Application
+      con OAuth2 Authorization Code + PKCE.
+    difficulty: intermedio
+    tags: [oauth2, oidc, spa, pkce, authentication]
+    prerequisites: []
+    estimated_time: "25 min"
+
+  - id: is-azure-ad
+    name: "Federación con Azure AD"
+    product: identity-server
+    category: identity-providers
+    path: identity-server/identity-providers/azure-ad
+    description: >
+      Configuración de Identity Provider federado con Microsoft Azure AD
+      usando OIDC.
+    difficulty: avanzado
+    tags: [federation, azure-ad, oidc, enterprise]
+    prerequisites: []
+    estimated_time: "40 min"
+
+  - id: is-ip-based-2fa
+    name: "2FA basado en IP"
+    product: identity-server
+    category: adaptive-auth
+    path: identity-server/adaptive-auth/ip-based-2fa
+    description: >
+      Script de autenticación adaptativa que solicita segundo factor
+      cuando el login viene de una IP no reconocida.
+    difficulty: intermedio
+    tags: [2fa, adaptive-auth, security, conditional]
+    prerequisites: []
+    estimated_time: "20 min"
+
+  # =========================================================================
+  # STREAMING INTEGRATOR
+  # =========================================================================
+
+  - id: si-kafka-consumer
+    name: "Consumidor Kafka"
+    product: streaming-integrator
+    category: event-processing
+    path: streaming-integrator/event-processing/kafka-consumer
+    description: >
+      Aplicación Siddhi que consume eventos de un topic Kafka,
+      los transforma y los envía a un destino.
+    difficulty: intermedio
+    tags: [kafka, streaming, events, siddhi]
+    prerequisites: []
+    estimated_time: "30 min"
+
+  # =========================================================================
+  # BALLERINA
+  # =========================================================================
+
+  - id: bal-http-service
+    name: "Servicio HTTP Ballerina"
+    product: ballerina
+    category: http-service
+    path: ballerina/http-service
+    description: >
+      Servicio HTTP con Ballerina con endpoints REST, health check
+      y manejo de errores.
+    difficulty: basico
+    tags: [ballerina, http, rest, service]
+    prerequisites: []
+    estimated_time: "15 min"

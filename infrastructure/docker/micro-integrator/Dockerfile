@@ -38,4 +38,4 @@ EXPOSE 8290 8253 9164
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --retries=5 --start-period=90s \
-    CMD curl -sSk https://localhost:9164/management/apis || exit 1
+    CMD curl -sSf http://localhost:8290/ || exit 1

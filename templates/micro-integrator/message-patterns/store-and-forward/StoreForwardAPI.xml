@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Store and Forward — API receptora
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  Recibe mensajes y los almacena en un Message Store para
+  procesamiento asíncrono. Responde inmediatamente con 202 Accepted.
+
+  Variables:
+    {{API_NAME}}    - Nombre de la API
+    {{API_CONTEXT}} - Contexto URL
+    {{STORE_NAME}}  - Nombre del Message Store
+-->
+<api xmlns="http://ws.apache.org/ns/synapse"
+     name="{{API_NAME}}"
+     context="{{API_CONTEXT}}">
+
+    <resource methods="POST" uri-template="/">
+        <inSequence>
+            <log level="custom">
+                <property name="ACTION" value="Mensaje recibido, almacenando en store"/>
+                <property name="STORE" value="{{STORE_NAME}}"/>
+            </log>
+
+            <!-- Agregar timestamp de recepción -->
+            <property name="RECEIVED_AT"
+                      expression="get-property('SYSTEM_DATE')"
+                      scope="default"/>
+
+            <!-- Almacenar en el Message Store -->
+            <store messageStore="{{STORE_NAME}}"/>
+
+            <!-- Responder inmediatamente con 202 Accepted -->
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "status": "accepted",
+                        "message": "Mensaje encolado para procesamiento",
+                        "store": "{{STORE_NAME}}"
+                    }
+                </format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="202" scope="axis2"/>
+            <property name="messageType" value="application/json" scope="axis2"/>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <log level="custom">
+                <property name="ERROR" value="Error almacenando mensaje"/>
+                <property name="DETAIL" expression="get-property('ERROR_MESSAGE')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>
+                    {"error": "internal_error", "message": "No se pudo encolar el mensaje"}
+                </format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="500" scope="axis2"/>
+            <property name="messageType" value="application/json" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>

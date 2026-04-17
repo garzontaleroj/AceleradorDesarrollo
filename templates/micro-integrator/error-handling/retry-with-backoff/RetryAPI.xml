@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: API con Retry y manejo de fallos
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  API que utiliza el endpoint con retry/backoff y maneja los
+  errores cuando todos los reintentos se agotan.
+
+  Variables:
+    {{API_NAME}}    - Nombre de la API
+    {{API_CONTEXT}} - Contexto URL
+-->
+<api xmlns="http://ws.apache.org/ns/synapse"
+     name="{{API_NAME}}"
+     context="{{API_CONTEXT}}">
+
+    <resource methods="POST GET PUT DELETE" uri-template="/*">
+        <inSequence>
+            <log level="custom">
+                <property name="ACTION" value="Enviando al backend con retry"/>
+                <property name="METHOD" expression="get-property('axis2', 'HTTP_METHOD')"/>
+                <property name="PATH" expression="get-property('REST_URL_POSTFIX')"/>
+            </log>
+
+            <!-- Enviar al endpoint con retry configurado -->
+            <call>
+                <endpoint key="RetryBackoffEndpoint"/>
+            </call>
+
+            <!-- Verificar si la llamada fue exitosa -->
+            <filter source="get-property('ERROR_CODE')" regex=".*">
+                <then>
+                    <!-- Error: todos los reintentos agotados -->
+                    <log level="custom">
+                        <property name="STATUS" value="Todos los reintentos agotados"/>
+                        <property name="ERROR_CODE" expression="get-property('ERROR_CODE')"/>
+                        <property name="ERROR_MSG" expression="get-property('ERROR_MESSAGE')"/>
+                    </log>
+
+                    <payloadFactory media-type="json">
+                        <format>
+                            {
+                                "error": "service_unavailable",
+                                "message": "El servicio backend no está disponible después de múltiples reintentos",
+                                "details": {
+                                    "error_code": "$1",
+                                    "suggestion": "Reintentar más tarde o contactar soporte"
+                                }
+                            }
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="get-property('ERROR_CODE')"/>
+                        </args>
+                    </payloadFactory>
+                    <property name="HTTP_SC" value="503" scope="axis2"/>
+                    <property name="messageType" value="application/json" scope="axis2"/>
+                </then>
+                <else>
+                    <!-- Éxito -->
+                    <log level="custom">
+                        <property name="STATUS" value="Respuesta exitosa del backend"/>
+                    </log>
+                </else>
+            </filter>
+            <respond/>
+        </inSequence>
+        <faultSequence>
+            <log level="custom">
+                <property name="FAULT" value="Error inesperado en la secuencia"/>
+                <property name="ERROR" expression="get-property('ERROR_MESSAGE')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>
+                    {"error": "internal_error", "message": "Error interno del servidor"}
+                </format>
+                <args/>
+            </payloadFactory>
+            <property name="HTTP_SC" value="500" scope="axis2"/>
+            <property name="messageType" value="application/json" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>

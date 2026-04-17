@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Proxy Pass-Through
+  Producto:  WSO2 Micro Integrator
+  
+  Variables:
+    {{PROXY_NAME}}  - Nombre del proxy
+    {{BACKEND_URL}} - URL del servicio backend
+-->
+<proxy xmlns="http://ws.apache.org/ns/synapse"
+       name="{{PROXY_NAME}}"
+       transports="http https"
+       startOnLoad="true">
+
+    <target>
+        <endpoint>
+            <http uri-template="{{BACKEND_URL}}/{uri.var.*}">
+                <timeout>
+                    <duration>30000</duration>
+                    <responseAction>fault</responseAction>
+                </timeout>
+            </http>
+        </endpoint>
+
+        <inSequence>
+            <log level="custom">
+                <property name="Proxy" value="{{PROXY_NAME}}"/>
+                <property name="Direction" value="REQUEST"/>
+                <property name="Method" expression="get-property('axis2','HTTP_METHOD')"/>
+                <property name="To" expression="get-property('To')"/>
+            </log>
+        </inSequence>
+
+        <outSequence>
+            <log level="custom">
+                <property name="Proxy" value="{{PROXY_NAME}}"/>
+                <property name="Direction" value="RESPONSE"/>
+                <property name="StatusCode" expression="get-property('axis2','HTTP_SC')"/>
+            </log>
+            <send/>
+        </outSequence>
+
+        <faultSequence>
+            <log level="custom">
+                <property name="Proxy" value="{{PROXY_NAME}}"/>
+                <property name="Direction" value="FAULT"/>
+                <property name="ErrorCode" expression="get-property('ERROR_CODE')"/>
+                <property name="ErrorMessage" expression="get-property('ERROR_MESSAGE')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>{"error":"PROXY_ERROR","message":"Error en proxy {{PROXY_NAME}}"}</format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="502" scope="axis2"/>
+            <respond/>
+        </faultSequence>
+    </target>
+
+</proxy>

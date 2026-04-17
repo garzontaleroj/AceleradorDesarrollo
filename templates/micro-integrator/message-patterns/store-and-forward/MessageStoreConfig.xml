@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Plantilla: Message Store (In-Memory)
+  Producto:  WSO2 Micro Integrator 4.3.x
+
+  Message Store en memoria para desarrollo y testing.
+  Para producción, usar JMS Message Store con ActiveMQ/RabbitMQ.
+
+  Variables:
+    {{STORE_NAME}} - Nombre del Message Store
+-->
+<messageStore xmlns="http://ws.apache.org/ns/synapse"
+              name="{{STORE_NAME}}"
+              class="org.apache.synapse.message.store.impl.memory.InMemoryStore">
+    <!--
+    Para producción con RabbitMQ:
+    <parameter name="store.rabbitmq.host.name">rabbitmq</parameter>
+    <parameter name="store.rabbitmq.host.port">5672</parameter>
+    <parameter name="store.rabbitmq.username">guest</parameter>
+    <parameter name="store.rabbitmq.password">guest</parameter>
+    <parameter name="store.rabbitmq.queue.name">{{STORE_NAME}}_queue</parameter>
+    <parameter name="store.rabbitmq.exchange.name">{{STORE_NAME}}_exchange</parameter>
+
+    Para producción con JMS (ActiveMQ):
+    <parameter name="java.naming.factory.initial">org.apache.activemq.jndi.ActiveMQInitialContextFactory</parameter>
+    <parameter name="java.naming.provider.url">tcp://activemq:61616</parameter>
+    <parameter name="store.jms.destination">{{STORE_NAME}}_queue</parameter>
+    <parameter name="store.jms.JMSSpecVersion">1.1</parameter>
+    -->
+</messageStore>

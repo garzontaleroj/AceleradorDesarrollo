@@ -1,0 +1,66 @@
+<!--
+  Plantilla: Política de Rate Limiting personalizada
+  Producto:  WSO2 API Manager
+
+  Variables:
+    {{POLICY_NAME}}  - Nombre identificador de la política
+    {{MAX_REQUESTS}} - Número máximo de peticiones permitidas
+    {{TIME_WINDOW}}  - Ventana de tiempo en segundos
+
+  Esta política usa un contador en caché compartido para limitar
+  las peticiones por aplicación (consumer key).
+-->
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="{{POLICY_NAME}}">
+    <property name="_RL_CONSUMER_KEY_"
+              expression="get-property('axis2', 'api.ut.consumerKey')"
+              scope="default"/>
+
+    <property name="_RL_CACHE_KEY_"
+              expression="fn:concat('rl_', get-property('_RL_CONSUMER_KEY_'), '_', get-property('REST_API_CONTEXT'))"
+              scope="default"/>
+
+    <!-- Obtener contador actual del caché -->
+    <cache collector="false"
+           maxMessageSize="2048"
+           timeout="{{TIME_WINDOW}}"
+           scope="per-host">
+        <implementation type="memory" maxSize="5000"/>
+    </cache>
+
+    <!-- Verificar límite -->
+    <filter xpath="get-property('_RL_REQUEST_COUNT_') > {{MAX_REQUESTS}}">
+        <then>
+            <!-- Límite excedido: rechazar con 429 -->
+            <log level="custom">
+                <property name="RATE_LIMIT" value="EXCEEDED"/>
+                <property name="consumer"
+                          expression="get-property('_RL_CONSUMER_KEY_')"/>
+                <property name="api_context"
+                          expression="get-property('REST_API_CONTEXT')"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>
+                    {
+                        "code": "RATE_LIMIT_EXCEEDED",
+                        "message": "Has excedido el límite de {{MAX_REQUESTS}} peticiones por {{TIME_WINDOW}} segundos",
+                        "retryAfter": {{TIME_WINDOW}}
+                    }
+                </format>
+            </payloadFactory>
+            <property name="HTTP_SC" value="429" scope="axis2"/>
+            <property name="RESPONSE" value="true"/>
+            <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
+            <header name="Retry-After" value="{{TIME_WINDOW}}" scope="transport"/>
+            <header name="Content-Type" value="application/json" scope="transport"/>
+            <respond/>
+        </then>
+        <else>
+            <!-- Dentro del límite: incrementar contador y continuar -->
+            <log level="custom" category="DEBUG">
+                <property name="RATE_LIMIT" value="OK"/>
+                <property name="count"
+                          expression="get-property('_RL_REQUEST_COUNT_')"/>
+            </log>
+        </else>
+    </filter>
+</sequence>

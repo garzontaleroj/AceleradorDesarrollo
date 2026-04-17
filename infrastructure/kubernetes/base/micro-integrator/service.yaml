@@ -15,6 +15,6 @@ spec:
       targetPort: 8253
     - name: management
       port: 9164
-      targetPort: 9164
+      targetPort: 9154
   selector:
     app.kubernetes.io/name: micro-integrator

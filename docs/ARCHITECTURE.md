@@ -59,6 +59,14 @@ AceleradorDesarrollo/
 │   ├── streaming-integrator/    ← Siddhi apps
 │   └── ballerina/               ← Servicios Ballerina
 │
+├── templates/                   ← Base de conocimiento (15 plantillas)
+│   ├── catalog.yaml             ← Índice central del catálogo
+│   ├── micro-integrator/        ← REST, data-services, patrones EIP, errores
+│   ├── api-manager/             ← Definiciones OpenAPI, políticas
+│   ├── identity-server/         ← SPs, IdPs, auth adaptiva
+│   ├── streaming-integrator/    ← Event processing (Kafka, CDC)
+│   └── ballerina/               ← Servicios HTTP
+│
 ├── infrastructure/              ← Infraestructura como código
 │   ├── docker/                  ← Dockerfiles por producto
 │   └── kubernetes/              ← Kustomize (base + overlays)
@@ -141,7 +149,39 @@ Developer                GitHub                        Kubernetes
 5. App → APIM (JWT en header Authorization)
 6. APIM valida JWT y aplica políticas
 ```
+## Puertos y Servicios Kubernetes
 
+| Producto | Puerto | Protocolo | Uso |
+|----------|--------|-----------|-----|
+| **API Manager** | 9443 | HTTPS | Publisher, DevPortal, Admin Console |
+| | 8243 | HTTPS | Gateway (producción) |
+| | 8280 | HTTP | Gateway (sandbox) |
+| **Micro Integrator** | 8290 | HTTP | HTTP Passthrough (APIs/proxies) |
+| | 8253 | HTTPS | HTTPS Passthrough |
+| | 9154 | HTTPS | Management API (interno) |
+| **Identity Server** | 9443 | HTTPS | Console, OAuth/OIDC endpoints |
+| **Streaming Integrator** | 9443 | HTTPS | Console |
+| | 9090 | HTTP | Siddhi API |
+
+> **Nota**: El Management API del MI (9154) requiere autenticación Basic y es solo
+> para uso interno. Los probes de K8s usan tcpSocket en el puerto 8290.
+
+## Catálogo de Plantillas
+
+El directorio `templates/` contiene **15 plantillas reutilizables** organizadas por producto.
+El archivo `templates/catalog.yaml` sirve como índice central con metadatos de cada plantilla
+(dificultad, tiempo estimado, dependencias, tags).
+
+| Producto | Plantillas | Categorías |
+|----------|-----------|------------|
+| Micro Integrator | 6 | REST API, Data Services, Message Patterns, Error Handling |
+| API Manager | 2 | Definiciones OpenAPI, Políticas |
+| Identity Server | 3 | Service Providers, Identity Providers, Auth Adaptiva |
+| Streaming Integrator | 1 | Event Processing |
+| Ballerina | 1 | HTTP Service |
+
+Las plantillas incluyen artefactos listos para copiar, archivos README con instrucciones
+paso a paso, y guías de personalización. Ver [templates/README.md](../templates/README.md).
 ## Tecnologías
 
 | Componente | Tecnología | Versión |

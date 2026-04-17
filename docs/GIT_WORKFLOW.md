@@ -133,6 +133,7 @@ Usamos [Conventional Commits](https://www.conventionalcommits.org/) con prefijo 
 | `bal` | Ballerina |
 | `infra` | Docker / Kubernetes |
 | `ci` | GitHub Actions |
+| `template` | Plantillas reutilizables |
 
 ### Ejemplos
 
@@ -142,6 +143,7 @@ fix(mi): corregir timeout en endpoint de facturación
 config(is): actualizar configuración OAuth para nuevo proveedor
 ci(infra): agregar validación de Kustomize en pipeline
 docs(bal): documentar servicio de notificaciones
+feat(template): agregar plantilla de retry con backoff exponencial
 ```
 
 ## Protección de Ramas
