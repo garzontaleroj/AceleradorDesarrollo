@@ -94,6 +94,18 @@ templates/
 
 └── python/                            ← Plantillas Python
     └── fastapi-rest/                  ← API REST con FastAPI + Pydantic
+
+├── openshift/                         ← Plantillas OpenShift (OCP)
+│   └── quickstart/                    ← Quickstart: BuildConfig + Deploy + Route
+│       ├── README.md                  ← Guía de uso
+│       ├── Dockerfile                 ← Multi-stage (UBI8 + Java 17)
+│       ├── openshift-template.yaml    ← Template OCP completo
+│       └── k8s/                       ← Manifiestos individuales
+│           ├── kustomization.yaml     ← Base Kustomize
+│           ├── namespace.yaml         ← Namespace del proyecto
+│           ├── deployment.yaml        ← Deployment con health checks
+│           ├── service.yaml           ← ClusterIP Service
+│           └── route.yaml             ← Route TLS edge
 ```
 
 ## Cómo usar una plantilla

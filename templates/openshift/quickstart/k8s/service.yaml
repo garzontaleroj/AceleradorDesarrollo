@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ocp-quickstart
+  labels:
+    app: ocp-quickstart
+    app.kubernetes.io/name: ocp-quickstart
+spec:
+  type: ClusterIP
+  selector:
+    app: ocp-quickstart
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

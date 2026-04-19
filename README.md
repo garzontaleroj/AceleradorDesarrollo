@@ -98,7 +98,8 @@ AceleradorDesarrollo/
 │   ├── openchoreo/                    # 1 plantilla OpenChoreo
 │   └── karate/                        # 1 plantilla Karate│   ├── quarkus/                       # 1 plantilla Quarkus
 │   ├── spring-boot/                   # 1 plantilla Spring Boot
-│   └── python/                        # 1 plantilla Python│
+│   └── python/                        # 1 plantilla Python
+│   └── openshift/                     # 1 plantilla OpenShift (OCP)│
 ├── tests/
 │   ├── unit/                          # Validación estructura + XML
 │   ├── integration/                   # Tests contra productos WSO2
@@ -206,11 +207,11 @@ Al hacer merge a `main`, el CD despliega automáticamente a DEV.
 - [Git Workflow](docs/GIT_WORKFLOW.md) — GitHub Flow + Conventional Commits
 - [Contribución](docs/CONTRIBUTING.md) — Guía para desarrolladores + troubleshooting
 - [Ambientes](docs/ENVIRONMENTS.md) — Configuración por ambiente (incluye LOCAL/Minikube)
-- [Catálogo de Plantillas](templates/README.md) — 22 plantillas reutilizables de integración
+- [Catálogo de Plantillas](templates/README.md) — 23 plantillas reutilizables de integración
 
 ## Catálogo de Plantillas
 
-El acelerador incluye **22 plantillas reutilizables** en `templates/` que cubren los patrones
+El acelerador incluye **23 plantillas reutilizables** en `templates/` que cubren los patrones
 de integración más comunes. Consulta `templates/catalog.yaml` para el índice completo.
 
 | Producto | Plantillas | Ejemplo |
@@ -225,6 +226,7 @@ de integración más comunes. Consulta `templates/catalog.yaml` para el índice 
 | Quarkus | 1 | API REST (RESTEasy Reactive, GraalVM) |
 | Spring Boot | 1 | API REST (Spring Web, Actuator, springdoc) |
 | Python | 1 | API REST (FastAPI, Pydantic, pytest) |
+| OpenShift (OCP) | 1 | Quickstart (BuildConfig, Deploy, Route) |
 
 ## Requisitos
 

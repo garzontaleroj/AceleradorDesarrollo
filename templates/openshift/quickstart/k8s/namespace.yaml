@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ocp-quickstart-dev
+  labels:
+    app: ocp-quickstart
+  annotations:
+    openshift.io/display-name: "OCP Quickstart (DEV)"
+    openshift.io/description: "Proyecto de desarrollo para la aplicación quickstart"

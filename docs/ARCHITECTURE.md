@@ -59,7 +59,7 @@ AceleradorDesarrollo/
 │   ├── streaming-integrator/    ← Siddhi apps
 │   └── ballerina/               ← Servicios Ballerina
 │
-├── templates/                   ← Base de conocimiento (23 plantillas)
+├── templates/                   ← Base de conocimiento (24 plantillas)
 │   ├── catalog.yaml             ← Índice central del catálogo
 │   ├── micro-integrator/        ← REST, data-services, patrones EIP, errores
 │   ├── api-manager/             ← Definiciones OpenAPI, políticas
@@ -168,7 +168,7 @@ Developer                GitHub                        Kubernetes
 
 ## Catálogo de Plantillas
 
-El directorio `templates/` contiene **23 plantillas reutilizables** organizadas por producto.
+El directorio `templates/` contiene **24 plantillas reutilizables** organizadas por producto.
 El archivo `templates/catalog.yaml` sirve como índice central con metadatos de cada plantilla
 (dificultad, tiempo estimado, dependencias, tags).
 
@@ -184,6 +184,7 @@ El archivo `templates/catalog.yaml` sirve como índice central con metadatos de 
 | Quarkus | 1 | REST API |
 | Spring Boot | 1 | REST API |
 | Python | 1 | FastAPI REST |
+| OpenShift (OCP) | 1 | Quickstart (BuildConfig + Deploy + Route) |
 
 Las plantillas incluyen artefactos listos para copiar, archivos README con instrucciones
 paso a paso, y guías de personalización. Ver [templates/README.md](../templates/README.md).
