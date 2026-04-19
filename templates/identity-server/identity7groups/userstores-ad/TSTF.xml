@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><UserStoreManager class="org.wso2.carbon.user.core.ldap.UniqueIDActiveDirectoryUserStoreManager">
+      <Property name="ReadGroups">true</Property>
+      <Property name="Description">Funcionarios pruebas - Active Directory</Property>
+      <Property name="GroupSearchBase">OU=Grupos,DC=tstf,DC=axacolpatria,DC=co</Property>
+      <Property name="GroupNameListFilter">(objectClass=group)</Property>
+      <Property name="DisplayNameAttribute">sAMAccountName</Property>
+      <Property name="BackLinksEnabled">true</Property>
+      <Property name="java.naming.ldap.attributes.binary">objectGuid objectSid</Property>
+      <Property name="GroupNameAttribute">cn</Property>
+      <Property name="MaxUserNameListLength">100</Property>
+      <Property name="WriteGroups">false</Property>
+      <Property name="UserIDAttribute">objectGuid</Property>
+      <Property name="ReadTimeout">10000</Property>
+      <Property name="ConnectionName">CN=WSO2 ServiceAccount,OU=Service_accounts,DC=tstf,DC=axacolpatria,DC=co</Property>
+      <Property name="StartTLSEnabled">false</Property>
+      <Property name="GroupNameSearchFilter">(&amp;(objectClass=group)(cn=?))</Property>
+      <Property name="EmptyRolesAllowed">true</Property>
+      <Property name="ConnectionPoolingEnabled">false</Property>
+      <Property name="GroupEntryObjectClass">group</Property>
+      <Property name="MaxRoleNameListLength">100</Property>
+      <Property name="ConnectionURL">ldap://samba-ad:389</Property>
+      <Property name="Disabled">false</Property>
+      <Property name="MultiAttributeSeparator">,</Property>
+      <Property name="UserIdSearchFilter">(&amp;(objectClass=person)(objectGuid=?))</Property>
+      <Property encrypted="true" name="ConnectionPassword">eyJjIjoiZXlKamFYQm9aWElpT2lKUFJEQnBUVzR4THpneGRUbEtXQ3RuUnpWd1JUQnRXa3hMWkhCbVltTlNUVEV5VTNSSWFuSXhOSGM5UFNJc0ltbHVhWFJwWVd4cGVtRjBhVzl1Vm1WamRHOXlJam9pV0UxaFJXOVVjek5GWmtjdmF5dG1ia2hxY0ZKNVowRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUFNJc0ltdGxlVWxrSWpvaVdYQlJXVXB3YjNGRFZreHFWRlE0UlVwellUZzNaRXRxUzB4M04yRnBORlZYVVROdloyb3djREUyTkQwaWZRPT0iLCJ0IjoiQUVTL0dDTS9Ob1BhZGRpbmciLCJpdiI6IlhNYUVvVHMzRWZHL2srZm5IanBSeWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQT0ifQ==</Property>
+      <Property name="ReadOnly">true</Property>
+      <Property name="ImmutableAttributes">objectGuid,whenCreated,whenChanged</Property>
+      <Property name="DomainName">TSTF</Property>
+      <Property name="UserEntryObjectClass">person</Property>
+      <Property name="TimestampAttributes">whenChanged,whenCreated</Property>
+      <Property name="UserRolesCacheEnabled">true</Property>
+      <Property name="GroupIdAttribute">cn</Property>
+      <Property name="UserNameSearchFilter">(&amp;(objectClass=person)(sAMAccountName=?))</Property>
+      <Property name="UserNameListFilter">(objectClass=person)</Property>
+      <Property name="Referral">ignore</Property>
+      <Property name="transformObjectGUIDToUUID">true</Property>
+      <Property name="UserNameAttribute">sAMAccountName</Property>
+      <Property name="UserSearchBase">DC=tstf,DC=axacolpatria,DC=co</Property>
+      <Property name="MembershipAttribute">member</Property>
+      <Property name="Class">org.wso2.carbon.user.core.ldap.UniqueIDActiveDirectoryUserStoreManager</Property>
+      <Property name="LDAPConnectionTimeout">10000</Property>
+      <Property name="MemberOfAttribute">memberOf</Property>
+      <Property name="PasswordHashMethod">PLAIN_TEXT</Property>
+      <Property name="DomainName">TSTF</Property>
+      <Property name="Description">Funcionarios pruebas - Active Directory</Property>
+</UserStoreManager>

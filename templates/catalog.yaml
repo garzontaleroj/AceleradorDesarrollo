@@ -7,7 +7,7 @@
 # =============================================================================
 
 version: "1.0"
-last_updated: "2026-04-16"
+last_updated: "2025-07-17"
 
 templates:
 
@@ -163,6 +163,23 @@ templates:
     tags: [2fa, adaptive-auth, security, conditional]
     prerequisites: []
     estimated_time: "20 min"
+
+  - id: is-identity7groups
+    name: "Integración SCIM2 con Grupos LDAP/AD"
+    product: identity-server
+    category: identity7groups
+    path: identity-server/identity7groups
+    description: >
+      Integración completa de WSO2 IS 7.2.0 con directorios LDAP/Active Directory
+      externos para gestión de usuarios y grupos vía SCIM2. Incluye dos escenarios
+      Docker Compose (OpenLDAP y Samba AD DC simulando dominio AXA Colpatria TSTF),
+      configuración de userstores ReadOnly, mapeo de claims, y workaround para el
+      problema conocido de SCIM2 Groups con userstores externos (seed de metadatos
+      en H2 IDN_SCIM_GROUP). Scripts automatizados para claims y grupos.
+    difficulty: avanzado
+    tags: [scim2, ldap, active-directory, groups, userstore, claims, docker, samba-ad]
+    prerequisites: []
+    estimated_time: "60 min"
 
   # =========================================================================
   # STREAMING INTEGRATOR

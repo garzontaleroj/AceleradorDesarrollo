@@ -48,9 +48,21 @@ templates/
 │   ├── identity-providers/            ← Proveedores de identidad
 │   │   ├── azure-ad/                  ← Federación con Azure AD
 │   │   └── google/                    ← Login con Google
-│   └── adaptive-auth/                 ← Scripts de autenticación adaptativa
-│       ├── ip-based-2fa/              ← 2FA basado en IP
-│       └── role-based-step-up/        ← Step-up por rol
+│   ├── adaptive-auth/                 ← Scripts de autenticación adaptativa
+│   │   ├── ip-based-2fa/              ← 2FA basado en IP
+│   │   └── role-based-step-up/        ← Step-up por rol
+│   └── identity7groups/               ← SCIM2 con grupos LDAP/AD
+│       ├── README.md                  ← Guía completa
+│       ├── deployment.toml            ← Config WSO2 IS 7.2.0
+│       ├── docker-compose.yml         ← Escenario OpenLDAP
+│       ├── docker-compose-ad.yml      ← Escenario Samba AD DC
+│       ├── docs/                      ← Guías por escenario (LDAP, AD)
+│       ├── ldif/                      ← Seed data LDAP
+│       ├── samba-ad/                  ← Dockerfile + scripts Samba AD
+│       ├── userstores/                ← XML userstores (LDAP)
+│       ├── userstores-ad/             ← XML userstores (AD)
+│       ├── init-claims*.sh/.bat       ← Scripts mapeo de claims
+│       └── seed-scim-groups*.sh/.bat  ← Scripts seed SCIM2 grupos
 │
 ├── streaming-integrator/              ← Plantillas para SI
 │   ├── event-processing/              ← Procesamiento de eventos

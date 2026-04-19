@@ -1,0 +1,53 @@
+# ============================
+# Organizational Units
+# ============================
+dn: ou=users,dc=tsf,dc=axacolpatria,dc=co
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=tsf,dc=axacolpatria,dc=co
+objectClass: organizationalUnit
+ou: groups
+
+# ============================
+# Users
+# ============================
+dn: uid=jperez,ou=users,dc=tsf,dc=axacolpatria,dc=co
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: jperez
+cn: Juan Perez
+sn: Perez
+givenName: Juan
+mail: jperez@axacolpatria.co
+userPassword: password123
+employeeNumber: 89d7666b-9e43-49fb-99a2-9580bed45ddb
+
+dn: uid=mgarcia,ou=users,dc=tsf,dc=axacolpatria,dc=co
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+uid: mgarcia
+cn: Maria Garcia
+sn: Garcia
+givenName: Maria
+mail: mgarcia@axacolpatria.co
+userPassword: password123
+employeeNumber: 522f3448-32a8-4db3-943c-ebd2b64d637b
+
+# ============================
+# Groups
+# ============================
+dn: cn=developers,ou=groups,dc=tsf,dc=axacolpatria,dc=co
+objectClass: groupOfNames
+cn: developers
+member: uid=jperez,ou=users,dc=tsf,dc=axacolpatria,dc=co
+member: uid=mgarcia,ou=users,dc=tsf,dc=axacolpatria,dc=co
+
+dn: cn=admins,ou=groups,dc=tsf,dc=axacolpatria,dc=co
+objectClass: groupOfNames
+cn: admins
+member: uid=jperez,ou=users,dc=tsf,dc=axacolpatria,dc=co

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  WSO2 IS Read-Only LDAP User Store for Active Directory
+  Replica la configuración de producción TSTF (AXA Colpatria)
+  Configurado según los screenshots del entorno QWS
+-->
+<UserStoreManager class="org.wso2.carbon.user.core.ldap.UniqueIDReadOnlyLDAPUserStoreManager">
+
+  <!-- ======================== -->
+  <!-- Connection Settings      -->
+  <!-- ======================== -->
+  <Property name="ConnectionURL">ldap://samba-ad:389</Property>
+  <Property name="ConnectionName">CN=WSO2 ServiceAccount,OU=Service_accounts,DC=tstf,DC=axacolpatria,DC=co</Property>
+  <Property name="ConnectionPassword">S3rv1c3@WSO2tip</Property>
+
+  <!-- ======================== -->
+  <!-- User Search Settings     -->
+  <!-- ======================== -->
+  <Property name="UserSearchBase">DC=tstf,DC=axacolpatria,DC=co</Property>
+  <Property name="UserEntryObjectClass">person</Property>
+  <Property name="UserNameAttribute">sAMAccountName</Property>
+  <Property name="UserNameSearchFilter">(&amp;(objectClass=person)(sAMAccountName=?))</Property>
+  <Property name="UserNameListFilter">(objectClass=person)</Property>
+  <Property name="UserIDAttribute">sAMAccountName</Property>
+  <Property name="UserIdSearchFilter">(&amp;(objectClass=person)(sAMAccountName=?))</Property>
+  <Property name="DisplayNameAttribute">sAMAccountName</Property>
+  <Property name="UserDNPattern"></Property>
+
+  <!-- ======================== -->
+  <!-- Group Settings           -->
+  <!-- ======================== -->
+  <Property name="ReadGroups">true</Property>
+  <Property name="GroupSearchBase">DC=tstf,DC=axacolpatria,DC=co</Property>
+  <Property name="GroupEntryObjectClass">group</Property>
+  <Property name="GroupNameAttribute">cn</Property>
+  <Property name="GroupNameSearchFilter">(&amp;(objectClass=group)(cn=?))</Property>
+  <Property name="GroupNameListFilter">(objectClass=group)</Property>
+  <Property name="GroupCreatedDateAttribute">createTimestamp</Property>
+  <Property name="GroupLastModifiedDateAttribute">modifyTimestamp</Property>
+  <Property name="GroupDNPattern"></Property>
+  <Property name="MembershipAttribute">member</Property>
+  <Property name="MemberOfAttribute">memberOf</Property>
+  <Property name="GroupIdAttribute">groups</Property>
+  <Property name="GroupIDEnabled">false</Property>
+  <Property name="BackLinksEnabled">false</Property>
+
+  <!-- ======================== -->
+  <!-- General Settings         -->
+  <!-- ======================== -->
+  <Property name="Referral">follow</Property>
+  <Property name="EnableEscapeCharactersAtUserLogin">true</Property>
+  <Property name="ReadOnly">true</Property>
+  <Property name="Disabled">false</Property>
+  <Property name="MaxUserNameListLength">100</Property>
+  <Property name="MaxRoleNameListLength">100</Property>
+  <Property name="UserRolesCacheEnabled">true</Property>
+  <Property name="PasswordHashMethod">PLAIN_TEXT</Property>
+  <Property name="MultiAttributeSeparator">,</Property>
+  <Property name="MembershipAttributeRange">0</Property>
+  <Property name="CaseInsensitiveUsername">false</Property>
+
+  <!-- ======================== -->
+  <!-- LDAP Connection Tuning   -->
+  <!-- ======================== -->
+  <Property name="LDAPConnectionTimeout">10000</Property>
+  <Property name="ReadTimeout">10000</Property>
+  <Property name="RetryAttempts">0</Property>
+  <Property name="ConnectionRetryDelay">120000</Property>
+  <Property name="ConnectionPoolingEnabled">false</Property>
+  <Property name="LDAPInitialContextFactory">com.sun.jndi.ldap.LdapCtxFactory</Property>
+  <Property name="StartTLSEnabled">false</Property>
+
+  <!-- ======================== -->
+  <!-- AD-Specific Settings     -->
+  <!-- ======================== -->
+  <Property name="LDAPBinaryAttributes">objectGuid</Property>
+  <Property name="ClaimOperationsSupported">false</Property>
+  <Property name="UserDNCacheEnabled">true</Property>
+  <Property name="ImmutableAttributes">objectGuid,whenChanged,whenCreated</Property>
+  <Property name="TimestampAttributes">whenChanged,whenCreated</Property>
+  <Property name="EmptyRolesAllowed">true</Property>
+
+  <!-- ======================== -->
+  <!-- Domain Identification    -->
+  <!-- ======================== -->
+  <Property name="DomainName">TSTF</Property>
+  <Property name="Description">Funcionarios pruebas - Active Directory</Property>
+
+</UserStoreManager>

@@ -1,0 +1,67 @@
+# =============================================================
+# Simulación WSO2 IS + Active Directory (Samba AD DC)
+# Replica la configuración de producción TSTF.AXACOLPATRIA.CO
+# =============================================================
+
+services:
+
+  # ------------------------------------------------
+  # Samba AD DC - Simula Active Directory
+  # ------------------------------------------------
+  samba-ad:
+    build: ./samba-ad
+    container_name: samba-ad
+    hostname: dc1
+    domainname: tstf.axacolpatria.co
+    environment:
+      - SAMBA_REALM=TSTF.AXACOLPATRIA.CO
+      - SAMBA_DOMAIN=TSTF
+      - SAMBA_ADMIN_PASSWORD=P@ssw0rd2024
+      - SAMBA_DNS_FORWARDER=8.8.8.8
+    ports:
+      - "389:389"
+      - "636:636"
+      - "88:88"
+      - "3268:3268"
+    volumes:
+      - samba_data:/var/lib/samba
+    privileged: true
+    networks:
+      ad-network:
+        aliases:
+          - dc1.tstf.axacolpatria.co
+    healthcheck:
+      test: ["CMD-SHELL", "ldapsearch -x -H ldap://127.0.0.1:389 -b '' -s base namingContexts 2>/dev/null | grep -q namingContexts"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+  # ------------------------------------------------
+  # WSO2 Identity Server 7.2.0
+  # ------------------------------------------------
+  wso2is:
+    image: wso2/wso2is:7.2.0
+    container_name: wso2is
+    ports:
+      - "9443:9443"
+      - "9763:9763"
+    volumes:
+      - ./deployment.toml:/home/wso2carbon/wso2is-7.2.0/repository/conf/deployment.toml
+      - ./userstores-ad:/home/wso2carbon/wso2is-7.2.0/repository/deployment/server/userstores
+      - wso2is_db:/home/wso2carbon/wso2is-7.2.0/repository/database
+    environment:
+      - TZ=America/Bogota
+    depends_on:
+      samba-ad:
+        condition: service_healthy
+    networks:
+      - ad-network
+
+networks:
+  ad-network:
+    driver: bridge
+
+volumes:
+  samba_data:
+  wso2is_db:
