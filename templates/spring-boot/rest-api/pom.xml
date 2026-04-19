@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+NOTE: Spring Boot 3.4.x OSS support ends 2025-12-31
+      Commercial support available until 2026-12-31 via Tanzu Spring Runtime
+      See: https://spring.io/support
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">

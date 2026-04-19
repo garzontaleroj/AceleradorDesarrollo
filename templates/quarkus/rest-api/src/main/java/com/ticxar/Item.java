@@ -5,13 +5,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(description = "Entidad de ejemplo para operaciones CRUD")
 public class Item {
 
-    @Schema(description = "Identificador único", example = "1")
+    @Schema(description = "Identificador único", examples = "1")
     private Long id;
 
-    @Schema(description = "Nombre del item", example = "Item de prueba", required = true)
+    @Schema(description = "Nombre del item", examples = "Item de prueba", required = true)
     private String name;
 
-    @Schema(description = "Descripción del item", example = "Descripción de ejemplo")
+    @Schema(description = "Descripción del item", examples = "Descripción de ejemplo")
     private String description;
 
     public Item() {
