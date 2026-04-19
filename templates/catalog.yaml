@@ -214,3 +214,75 @@ templates:
     tags: [ballerina, http, rest, service]
     prerequisites: []
     estimated_time: "15 min"
+
+  # =========================================================================
+  # OBSERVABILIDAD — API MANAGER
+  # =========================================================================
+
+  - id: apim-otel-jaeger
+    name: "OpenTelemetry + Jaeger para API Manager"
+    product: api-manager
+    category: observability
+    path: api-manager/observability/opentelemetry-jaeger
+    description: >
+      Configuración de trazabilidad distribuida para WSO2 API Manager 4.3.0
+      usando OpenTelemetry como estándar de instrumentación y Jaeger como
+      backend de trazas. Incluye deployment.toml y docker-compose.
+    difficulty: intermedio
+    tags: [apim, opentelemetry, jaeger, observabilidad, trazas, docker]
+    prerequisites: [docker, docker-compose]
+    estimated_time: "20 min"
+
+  # =========================================================================
+  # OBSERVABILIDAD — MICRO INTEGRATOR
+  # =========================================================================
+
+  - id: mi-otel-jaeger
+    name: "OpenTelemetry + Jaeger para Micro Integrator"
+    product: micro-integrator
+    category: observability
+    path: micro-integrator/observability/opentelemetry-jaeger
+    description: >
+      Configuración de trazabilidad distribuida para WSO2 Micro Integrator
+      4.3.0 usando OpenTelemetry y Jaeger. Captura spans de mediación
+      (secuencias, mediadores, endpoints) con estadísticas habilitadas.
+    difficulty: intermedio
+    tags: [mi, opentelemetry, jaeger, observabilidad, trazas, mediacion, docker]
+    prerequisites: [docker, docker-compose]
+    estimated_time: "20 min"
+
+  # =========================================================================
+  # OPENCHOREO
+  # =========================================================================
+
+  - id: openchoreo-getting-started
+    name: "Getting Started con OpenChoreo"
+    product: openchoreo
+    category: platform-setup
+    path: openchoreo/getting-started
+    description: >
+      Plantilla base para desplegar componentes WSO2 y servicios Ballerina
+      en OpenChoreo, la plataforma de desarrollo open-source para Kubernetes
+      (CNCF Sandbox). Incluye manifiestos de componente y endpoints.
+    difficulty: avanzado
+    tags: [openchoreo, kubernetes, platform, cncf, backstage, devops]
+    prerequisites: [kubernetes, kubectl, helm]
+    estimated_time: "45 min"
+
+  # =========================================================================
+  # KARATE — TESTING
+  # =========================================================================
+
+  - id: karate-api-testing
+    name: "Testing de APIs con Karate"
+    product: karate
+    category: api-testing
+    path: karate/api-testing
+    description: >
+      Proyecto de pruebas automatizadas con Karate framework para validar
+      APIs publicadas en WSO2 API Manager y servicios del Micro Integrator.
+      Incluye tests de salud, CRUD y configuración por entorno.
+    difficulty: intermedio
+    tags: [karate, testing, api, rest, automatizacion, qa]
+    prerequisites: [java-11, maven]
+    estimated_time: "30 min"

@@ -1,0 +1,27 @@
+# =============================================================================
+# Plantilla: Configuración OpenTelemetry + Jaeger para WSO2 Micro Integrator
+# Producto:  WSO2 Micro Integrator 4.3.0
+# Variables:
+#   {{JAEGER_HOST}} - Hostname del colector Jaeger (default: jaeger)
+#   {{JAEGER_PORT}} - Puerto OTLP del colector (default: 4317)
+# =============================================================================
+# Agregar estas secciones al deployment.toml existente del MI.
+# No reemplazar el archivo completo, solo agregar/modificar estas secciones.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Estadísticas de mediación (REQUERIDO para OpenTelemetry)
+# -----------------------------------------------------------------------------
+[mediation]
+flow.statistics.capture_all = true
+flow.statistics.enable = true
+
+# -----------------------------------------------------------------------------
+# OpenTelemetry — Trazabilidad distribuida con Jaeger
+# -----------------------------------------------------------------------------
+[opentelemetry]
+enable = true
+logs = true
+type = "jaeger"
+host = "{{JAEGER_HOST}}"
+port = "{{JAEGER_PORT}}"

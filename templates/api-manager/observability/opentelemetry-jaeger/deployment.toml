@@ -1,0 +1,23 @@
+# =============================================================================
+# Plantilla: Configuración OpenTelemetry + Jaeger para WSO2 API Manager
+# Producto:  WSO2 API Manager 4.3.0
+# Variables:
+#   {{JAEGER_HOST}} - Hostname del colector Jaeger (default: jaeger)
+#   {{JAEGER_PORT}} - Puerto OTLP gRPC del colector (default: 4317)
+# =============================================================================
+# Agregar esta sección al deployment.toml existente del APIM.
+# No reemplazar el archivo completo, solo agregar/modificar estas secciones.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# OpenTelemetry — Trazabilidad distribuida con Jaeger
+# -----------------------------------------------------------------------------
+[apim.open_telemetry]
+remote_tracer.enable = true
+remote_tracer.name = "jaeger"
+remote_tracer.hostname = "{{JAEGER_HOST}}"
+remote_tracer.port = "{{JAEGER_PORT}}"
+
+# Sampling (opcional — descomentar para producción)
+# [apim.open_telemetry.remote_tracer.properties]
+# ratio = "0.1"   # Muestrear solo el 10% de las trazas

@@ -26,9 +26,11 @@ templates/
 │   │   ├── salesforce/                ← Integración Salesforce
 │   │   ├── sap/                       ← Integración SAP
 │   │   └── database-polling/          ← Polling de base de datos
-│   └── error-handling/                ← Patrones de manejo de errores
-│       ├── retry-with-backoff/        ← Reintentos con backoff
-│       └── dead-letter-channel/       ← Canal de mensajes muertos
+│   ├── error-handling/                ← Patrones de manejo de errores
+│   │   ├── retry-with-backoff/        ← Reintentos con backoff
+│   │   └── dead-letter-channel/       ← Canal de mensajes muertos
+│   └── observability/                 ← Observabilidad
+│       └── opentelemetry-jaeger/      ← Trazas con OpenTelemetry + Jaeger
 │
 ├── api-manager/                       ← Plantillas para APIM
 │   ├── api-definitions/               ← Definiciones OpenAPI
@@ -38,6 +40,8 @@ templates/
 │   │   ├── rate-limiting/             ← Rate limiting
 │   │   ├── request-validation/        ← Validación de request
 │   │   └── response-caching/          ← Cache de respuestas
+│   ├── observability/                 ← Observabilidad
+│   │   └── opentelemetry-jaeger/      ← Trazas con OpenTelemetry + Jaeger
 │   └── products/                      ← Productos API
 │       └── standard-product/          ← Producto API estándar
 │
@@ -75,6 +79,12 @@ templates/
     ├── http-service/                  ← Servicio HTTP
     ├── graphql-service/               ← Servicio GraphQL
     └── integration-service/           ← Servicio de integración
+
+├── openchoreo/                        ← Plantillas OpenChoreo
+│   └── getting-started/               ← Configuración inicial de componentes
+
+└── karate/                            ← Plantillas de Testing
+    └── api-testing/                   ← Tests de APIs con Karate framework
 ```
 
 ## Cómo usar una plantilla

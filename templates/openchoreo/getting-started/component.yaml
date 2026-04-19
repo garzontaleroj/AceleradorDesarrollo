@@ -1,0 +1,30 @@
+# =============================================================================
+# Plantilla: Componente OpenChoreo — Servicio WSO2
+# Plataforma: OpenChoreo (CNCF Sandbox)
+# Variables:
+#   {{COMPONENT_NAME}} - Nombre del componente (e.g., mi-customers-api)
+#   {{ORGANIZATION}}   - Organización en OpenChoreo (e.g., ticxar)
+#   {{PROJECT}}        - Proyecto en OpenChoreo (e.g., integraciones)
+#   {{CONTAINER_IMAGE}}- Imagen Docker (e.g., wso2/wso2mi:4.3.0)
+#   {{CONTAINER_PORT}} - Puerto principal del contenedor (e.g., 8290)
+# =============================================================================
+
+apiVersion: core.choreo.dev/v1alpha1
+kind: Component
+metadata:
+  name: "{{COMPONENT_NAME}}"
+  namespace: "{{ORGANIZATION}}-{{PROJECT}}"
+  labels:
+    app: "{{COMPONENT_NAME}}"
+    platform: openchoreo
+    managed-by: ticxar-accelerator
+  annotations:
+    choreo.dev/description: "Componente WSO2 desplegado via TICXAR Accelerator"
+spec:
+  type: service
+  source:
+    image: "{{CONTAINER_IMAGE}}"
+  ports:
+    - name: http
+      port: {{CONTAINER_PORT}}
+      protocol: HTTP

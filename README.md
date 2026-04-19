@@ -90,11 +90,13 @@ AceleradorDesarrollo/
 │
 ├── templates/                         # Base de conocimiento (plantillas)
 │   ├── catalog.yaml                   # Índice central del catálogo
-│   ├── micro-integrator/              # 6 plantillas MI
-│   ├── api-manager/                   # 2 plantillas APIM
+│   ├── micro-integrator/              # 7 plantillas MI
+│   ├── api-manager/                   # 3 plantillas APIM
 │   ├── identity-server/               # 3 plantillas IS
 │   ├── streaming-integrator/          # 1 plantilla SI
-│   └── ballerina/                     # 1 plantilla Ballerina
+│   ├── ballerina/                     # 1 plantilla Ballerina
+│   ├── openchoreo/                    # 1 plantilla OpenChoreo
+│   └── karate/                        # 1 plantilla Karate
 │
 ├── tests/
 │   ├── unit/                          # Validación estructura + XML
@@ -203,20 +205,22 @@ Al hacer merge a `main`, el CD despliega automáticamente a DEV.
 - [Git Workflow](docs/GIT_WORKFLOW.md) — GitHub Flow + Conventional Commits
 - [Contribución](docs/CONTRIBUTING.md) — Guía para desarrolladores + troubleshooting
 - [Ambientes](docs/ENVIRONMENTS.md) — Configuración por ambiente (incluye LOCAL/Minikube)
-- [Catálogo de Plantillas](templates/README.md) — 15 plantillas reutilizables de integración
+- [Catálogo de Plantillas](templates/README.md) — 19 plantillas reutilizables de integración
 
 ## Catálogo de Plantillas
 
-El acelerador incluye **15 plantillas reutilizables** en `templates/` que cubren los patrones
+El acelerador incluye **19 plantillas reutilizables** en `templates/` que cubren los patrones
 de integración más comunes. Consulta `templates/catalog.yaml` para el índice completo.
 
 | Producto | Plantillas | Ejemplo |
 |----------|-----------|----------|
-| Micro Integrator | 6 | API CRUD, Content-Based Router, Store & Forward |
-| API Manager | 2 | Definición OpenAPI, Rate Limiting |
+| Micro Integrator | 7 | API CRUD, Content-Based Router, Store & Forward, OpenTelemetry |
+| API Manager | 3 | Definición OpenAPI, Rate Limiting, OpenTelemetry |
 | Identity Server | 3 | SPA OAuth2/OIDC, Azure AD, 2FA adaptativo |
 | Streaming Integrator | 1 | Consumidor Kafka |
 | Ballerina | 1 | Servicio HTTP |
+| OpenChoreo | 1 | Getting Started (plataforma K8s) |
+| Karate | 1 | Testing de APIs |
 
 ## Requisitos
 

@@ -1,0 +1,51 @@
+# =============================================================================
+# Plantilla: Docker Compose — WSO2 API Manager + Jaeger (OpenTelemetry)
+# Producto:  WSO2 API Manager 4.3.0
+# Descripción:
+#   Stack local para desarrollo con trazabilidad distribuida habilitada.
+#   APIM envía trazas a Jaeger vía OpenTelemetry (OTLP gRPC).
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Jaeger All-in-One (Colector + UI + Almacenamiento en memoria)
+  # ---------------------------------------------------------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:1.62
+    container_name: jaeger
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC (OpenTelemetry)
+      - "4318:4318"     # OTLP HTTP (OpenTelemetry)
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:16686/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # WSO2 API Manager 4.3.0
+  # ---------------------------------------------------------------------------
+  api-manager:
+    image: wso2/wso2am:4.3.0
+    container_name: wso2-apim
+    ports:
+      - "9443:9443"     # Publisher, DevPortal, Admin Console
+      - "8243:8243"     # Gateway HTTPS
+      - "8280:8280"     # Gateway HTTP
+    volumes:
+      - ./deployment.toml:/home/wso2carbon/wso2am-4.3.0/repository/conf/deployment.toml
+    depends_on:
+      jaeger:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -f https://localhost:9443/services/Version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s

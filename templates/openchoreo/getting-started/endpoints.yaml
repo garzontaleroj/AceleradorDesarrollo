@@ -1,0 +1,25 @@
+# =============================================================================
+# Plantilla: Endpoints OpenChoreo — Exposición de servicios
+# Plataforma: OpenChoreo (CNCF Sandbox)
+# Variables:
+#   {{COMPONENT_NAME}} - Nombre del componente
+#   {{ORGANIZATION}}   - Organización en OpenChoreo
+#   {{PROJECT}}        - Proyecto en OpenChoreo
+#   {{CONTAINER_PORT}} - Puerto del contenedor
+#   {{ENDPOINT_PATH}}  - Path base del endpoint (e.g., /api/v1)
+# =============================================================================
+
+apiVersion: core.choreo.dev/v1alpha1
+kind: Endpoint
+metadata:
+  name: "{{COMPONENT_NAME}}-endpoint"
+  namespace: "{{ORGANIZATION}}-{{PROJECT}}"
+  labels:
+    app: "{{COMPONENT_NAME}}"
+spec:
+  componentRef:
+    name: "{{COMPONENT_NAME}}"
+  type: REST
+  port: {{CONTAINER_PORT}}
+  path: "{{ENDPOINT_PATH}}"
+  visibility: project    # project | organization | public

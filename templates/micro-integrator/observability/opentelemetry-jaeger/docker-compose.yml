@@ -1,0 +1,51 @@
+# =============================================================================
+# Plantilla: Docker Compose — WSO2 Micro Integrator + Jaeger (OpenTelemetry)
+# Producto:  WSO2 Micro Integrator 4.3.0
+# Descripción:
+#   Stack local para desarrollo con trazabilidad distribuida habilitada.
+#   MI envía trazas de mediación a Jaeger vía OpenTelemetry.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Jaeger All-in-One (Colector + UI + Almacenamiento en memoria)
+  # ---------------------------------------------------------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:1.62
+    container_name: jaeger
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC (OpenTelemetry)
+      - "4318:4318"     # OTLP HTTP (OpenTelemetry)
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:16686/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # WSO2 Micro Integrator 4.3.0
+  # ---------------------------------------------------------------------------
+  micro-integrator:
+    image: wso2/wso2mi:4.3.0
+    container_name: wso2-mi
+    ports:
+      - "8290:8290"     # HTTP Passthrough (APIs y proxy services)
+      - "8253:8253"     # HTTPS Passthrough
+      - "9164:9164"     # Management API (interno)
+    volumes:
+      - ./deployment.toml:/home/wso2carbon/wso2mi-4.3.0/conf/deployment.toml
+    depends_on:
+      jaeger:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8290/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s

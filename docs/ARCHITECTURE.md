@@ -59,7 +59,7 @@ AceleradorDesarrollo/
 │   ├── streaming-integrator/    ← Siddhi apps
 │   └── ballerina/               ← Servicios Ballerina
 │
-├── templates/                   ← Base de conocimiento (16 plantillas)
+├── templates/                   ← Base de conocimiento (20 plantillas)
 │   ├── catalog.yaml             ← Índice central del catálogo
 │   ├── micro-integrator/        ← REST, data-services, patrones EIP, errores
 │   ├── api-manager/             ← Definiciones OpenAPI, políticas
@@ -168,17 +168,19 @@ Developer                GitHub                        Kubernetes
 
 ## Catálogo de Plantillas
 
-El directorio `templates/` contiene **16 plantillas reutilizables** organizadas por producto.
+El directorio `templates/` contiene **20 plantillas reutilizables** organizadas por producto.
 El archivo `templates/catalog.yaml` sirve como índice central con metadatos de cada plantilla
 (dificultad, tiempo estimado, dependencias, tags).
 
 | Producto | Plantillas | Categorías |
 |----------|-----------|------------|
-| Micro Integrator | 6 | REST API, Data Services, Message Patterns, Error Handling |
-| API Manager | 2 | Definiciones OpenAPI, Políticas |
+| Micro Integrator | 7 | REST API, Data Services, Message Patterns, Error Handling, Observabilidad |
+| API Manager | 3 | Definiciones OpenAPI, Políticas, Observabilidad |
 | Identity Server | 4 | Service Providers, Identity Providers, Auth Adaptiva, SCIM2 Grupos LDAP/AD |
 | Streaming Integrator | 1 | Event Processing |
 | Ballerina | 1 | HTTP Service |
+| OpenChoreo | 1 | Platform Setup |
+| Karate | 1 | API Testing |
 
 Las plantillas incluyen artefactos listos para copiar, archivos README con instrucciones
 paso a paso, y guías de personalización. Ver [templates/README.md](../templates/README.md).
