@@ -85,6 +85,15 @@ templates/
 
 └── karate/                            ← Plantillas de Testing
     └── api-testing/                   ← Tests de APIs con Karate framework
+
+├── quarkus/                           ← Plantillas Quarkus
+│   └── rest-api/                      ← API REST con Quarkus (RESTEasy Reactive)
+
+├── spring-boot/                       ← Plantillas Spring Boot
+│   └── rest-api/                      ← API REST con Spring Boot 3.x
+
+└── python/                            ← Plantillas Python
+    └── fastapi-rest/                  ← API REST con FastAPI + Pydantic
 ```
 
 ## Cómo usar una plantilla

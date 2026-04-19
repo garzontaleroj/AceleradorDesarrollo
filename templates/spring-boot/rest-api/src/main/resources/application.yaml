@@ -1,0 +1,64 @@
+# =============================================================================
+# Spring Boot REST API — Configuración
+# =============================================================================
+
+spring:
+  application:
+    name: ticxar-spring-boot-rest-api
+
+server:
+  port: 8081
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI / Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+# Info del Actuator
+info:
+  app:
+    name: TICXAR Spring Boot REST API
+    version: 1.0.0
+    description: API REST de ejemplo para el Acelerador TICXAR
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.ticxar: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%logger{36}] - %msg%n"
+
+---
+# Perfil dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+logging:
+  level:
+    root: DEBUG
+
+---
+# Perfil prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    root: WARN
+    com.ticxar: INFO

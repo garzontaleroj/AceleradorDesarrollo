@@ -286,3 +286,57 @@ templates:
     tags: [karate, testing, api, rest, automatizacion, qa]
     prerequisites: [java-11, maven]
     estimated_time: "30 min"
+
+  # =========================================================================
+  # QUARKUS — REST API
+  # =========================================================================
+
+  - id: quarkus-rest-api
+    name: "API REST con Quarkus"
+    product: quarkus
+    category: rest-api
+    path: quarkus/rest-api
+    description: >
+      Proyecto base de API REST con Quarkus (Supersonic Subatomic Java).
+      Incluye RESTEasy Reactive, CDI, OpenAPI/Swagger UI, Health checks,
+      Micrometer Prometheus y soporte para compilación nativa con GraalVM.
+    difficulty: intermedio
+    tags: [quarkus, java, rest, openapi, cloud-native, graalvm]
+    prerequisites: [java-17, maven]
+    estimated_time: "20 min"
+
+  # =========================================================================
+  # SPRING BOOT — REST API
+  # =========================================================================
+
+  - id: springboot-rest-api
+    name: "API REST con Spring Boot"
+    product: spring-boot
+    category: rest-api
+    path: spring-boot/rest-api
+    description: >
+      Proyecto base de API REST con Spring Boot 3.x. Incluye Spring Web MVC,
+      Actuator (health/metrics/info), OpenAPI/Swagger UI con springdoc,
+      Bean Validation y configuración por perfiles YAML.
+    difficulty: basico
+    tags: [spring-boot, java, rest, openapi, actuator, web]
+    prerequisites: [java-17, maven]
+    estimated_time: "15 min"
+
+  # =========================================================================
+  # PYTHON — FASTAPI REST
+  # =========================================================================
+
+  - id: python-fastapi-rest
+    name: "API REST con Python FastAPI"
+    product: python
+    category: fastapi-rest
+    path: python/fastapi-rest
+    description: >
+      Proyecto base de API REST con FastAPI y Python. Incluye validación
+      con Pydantic, documentación OpenAPI automática (Swagger UI + ReDoc),
+      health check y tests con pytest + httpx.
+    difficulty: basico
+    tags: [python, fastapi, rest, openapi, pydantic, async]
+    prerequisites: [python-3.10]
+    estimated_time: "15 min"
