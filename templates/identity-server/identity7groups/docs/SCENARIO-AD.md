@@ -145,9 +145,15 @@ docker inspect --format='{{.State.Health.Status}}' samba-ad
 # Debería mostrar: healthy
 
 # Verificar LDAP
-docker exec samba-ad ldapsearch -x -H ldap://127.0.0.1:389 \
-  -D "CN=Administrator,CN=Users,DC=tstf,DC=axacolpatria,DC=co" \
-  -w "P@ssw0rd2024" -b "OU=Grupos,DC=tstf,DC=axacolpatria,DC=co" cn
+docker exec samba-ad ldapsearch -x -H ldap://127.0.0.1:389 -D "CN=Administrator,CN=Users,DC=tstf,DC=axacolpatria,DC=co" -w "P@ssw0rd2024" -b "OU=Grupos,DC=tstf,DC=axacolpatria,DC=co" cn
+```
+
+# Crear Nuevo grupo LDAP
+docker exec samba-ad samba-tool group add nuevo-grupo --groupou="OU=Grupos"
+```
+
+# Asociar usuario clopez a nuevo-grupo LDAP
+docker exec samba-ad samba-tool group addmember nuevo-grupo clopez
 ```
 
 ### Paso 3 — Esperar a que WSO2 IS esté listo
