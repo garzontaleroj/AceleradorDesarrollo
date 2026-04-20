@@ -1,0 +1,22 @@
+services:
+
+  kafka:
+    image: quay.io/strimzi/kafka:latest-kafka-4.1.0
+    command: [
+      "sh", "-c",
+      "rm -rf /tmp/kraft-combined-logs/* && ./bin/kafka-storage.sh format --standalone -t $$(./bin/kafka-storage.sh random-uuid) -c ./config/server.properties && ./bin/kafka-server-start.sh ./config/server.properties"
+    ]
+    ports:
+      - "9092:9092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+
+  database:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: quarkus_test
+      POSTGRES_PASSWORD: quarkus_test
+      POSTGRES_DB: quarkus_test

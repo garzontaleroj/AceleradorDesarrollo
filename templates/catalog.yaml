@@ -7,7 +7,7 @@
 # =============================================================================
 
 version: "1.0"
-last_updated: "2025-07-17"
+last_updated: "2025-07-22"
 
 templates:
 
@@ -360,3 +360,45 @@ templates:
     tags: [openshift, ocp, kubernetes, buildconfig, imagestream, route, s2i, docker]
     prerequisites: [oc-cli, docker]
     estimated_time: "25 min"
+
+  # =========================================================================
+  # AWESOME COMPOSE — Colección Docker Compose
+  # =========================================================================
+
+  - id: awesome-compose
+    name: "Colección Docker Compose — Awesome Compose"
+    product: docker
+    category: docker-compose
+    path: awesome-compose
+    description: >
+      Colección curada de ejemplos Docker Compose del proyecto oficial
+      awesome-compose de Docker. Incluye 40+ ejemplos de stacks completos
+      con servicios integrados: Angular, Django, Flask, FastAPI, React,
+      Spring Boot, Node.js, Nginx, PostgreSQL, MySQL, MongoDB, Redis,
+      Elasticsearch, Prometheus, Grafana, WordPress, y más. Ideal para
+      desarrollo local y prototipado rápido de stacks multi-servicio.
+    difficulty: basico
+    tags: [docker, compose, fullstack, frontend, backend, database, monitoring]
+    prerequisites: [docker, docker-compose]
+    estimated_time: "10 min"
+
+  # =========================================================================
+  # QUARKUS QUICKSTARTS — Colección oficial de Quarkus
+  # =========================================================================
+
+  - id: quarkus-quickstarts
+    name: "Colección Quarkus Quickstarts"
+    product: quarkus
+    category: quickstarts
+    path: quarkus/quarkus-quickstarts
+    description: >
+      Colección oficial de quickstarts del framework Quarkus (Supersonic
+      Subatomic Java). Incluye 100+ ejemplos que cubren: getting-started,
+      Hibernate ORM/Reactive, RESTEasy, Kafka, Security (OAuth2, JWT, OIDC),
+      gRPC, GraphQL, WebSockets, Spring compatibility, Amazon services,
+      OpenTelemetry, Health, Micrometer, y compilación nativa con GraalVM.
+      Requiere JDK 17+ y opcionalmente GraalVM para compilación nativa.
+    difficulty: intermedio
+    tags: [quarkus, java, quickstart, cloud-native, graalvm, microservices, reactive]
+    prerequisites: [java-17, maven]
+    estimated_time: "15 min"

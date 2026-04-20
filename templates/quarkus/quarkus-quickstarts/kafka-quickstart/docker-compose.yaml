@@ -1,0 +1,45 @@
+services:
+
+  kafka:
+    image: quay.io/strimzi/kafka:latest-kafka-4.1.0
+    command: [
+      "sh", "-c",
+      "rm -rf /tmp/kraft-combined-logs/* && ./bin/kafka-storage.sh format --standalone -t $$(./bin/kafka-storage.sh random-uuid) -c ./config/server.properties && ./bin/kafka-server-start.sh ./config/server.properties --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS}"
+    ]
+    ports:
+      - "9092:9092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+    networks:
+      - kafka-quickstart-network
+
+  producer:
+    image: quarkus-quickstarts/kafka-quickstart-producer:1.0-${QUARKUS_MODE:-jvm}
+    build:
+      context: producer
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8080:8080"
+    networks:
+      - kafka-quickstart-network
+
+  processor:
+    image: quarkus-quickstarts/kafka-quickstart-processor:1.0-${QUARKUS_MODE:-jvm}
+    build:
+      context: processor
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - kafka-quickstart-network
+
+networks:
+  kafka-quickstart-network:
+    name: kafkaquickstart

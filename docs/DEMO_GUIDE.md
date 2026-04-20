@@ -70,7 +70,7 @@ tree -L 2 -d
 | Carpeta | Qué contiene | Por qué importa |
 |---------|-------------|------------------|
 | `projects/` | Artefactos WSO2 (APIs, Siddhi, SPs) | Donde el equipo trabaja día a día |
-| `templates/` | 15 plantillas reutilizables | Arranque rápido, no empezar de cero |
+| `templates/` | 24 plantillas reutilizables | Arranque rápido, no empezar de cero |
 | `infrastructure/` | Docker + K8s (Kustomize) | Infraestructura reproducible |
 | `config/` | `deployment.toml` por ambiente | Configuración separada del código |
 | `scripts/` | Build, deploy, test, demo | Automatización con un comando |
@@ -146,16 +146,23 @@ curl -k http://localhost:8290/services
 
 ### 5. Plantillas y Catálogo (10 min)
 
-Abrir `templates/catalog.yaml` y mostrar el catálogo de 15 plantillas:
+Abrir `templates/catalog.yaml` y mostrar el catálogo de 24 plantillas:
 
 | Producto | Plantillas | Ejemplos |
 |----------|-----------|----------|
-| Micro Integrator | 6 | REST CRUD, Proxy, OAuth2, Content Router, SOAP-to-REST, DB |
-| API Manager | 2 | OpenAPI spec, Custom Log Policy |
-| Identity Server | 3 | SPA OAuth2, External SAML IdP, Adaptive Auth |
+| Micro Integrator | 7 | REST CRUD, Proxy, OAuth2, Content Router, Store & Forward, OpenTelemetry |
+| API Manager | 3 | OpenAPI spec, Rate Limiting, OpenTelemetry |
+| Identity Server | 4 | SPA OAuth2, Azure AD, Adaptive Auth, SCIM2 Groups |
 | Streaming Integrator | 1 | Event Processor |
 | Ballerina | 1 | HTTP Service |
-| **Total** | **15** | |
+| OpenChoreo | 1 | Getting Started |
+| Karate | 1 | API Testing |
+| Quarkus | 2 | REST API, Quickstarts (100+ ejemplos oficiales) |
+| Spring Boot | 1 | REST API |
+| Python | 1 | FastAPI REST |
+| OpenShift (OCP) | 1 | Quickstart (BuildConfig + Deploy + Route) |
+| Docker Compose | 1 | Awesome Compose (40+ stacks multi-servicio) |
+| **Total** | **24** | |
 
 **Demo sugerida — mostrar una plantilla concreta:**
 
@@ -244,7 +251,7 @@ kubectl port-forward svc/wso2-micro-integrator -n wso2-dev 8290:8290
 # → Abrir http://localhost:8290/services en navegador
 
 # 4. Mostrar plantillas (30 seg)
-# → Abrir templates/catalog.yaml y señalar las 15 plantillas
+# → Abrir templates/catalog.yaml y señalar las 24 plantillas
 ```
 
 **Mensaje final:**

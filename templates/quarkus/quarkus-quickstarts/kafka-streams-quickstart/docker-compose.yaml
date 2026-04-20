@@ -1,0 +1,40 @@
+services:
+  kafka:
+    image: quay.io/strimzi/kafka:latest-kafka-4.1.0
+    command: [
+      "sh", "-c",
+      "rm -rf /tmp/kraft-combined-logs/* && ./bin/kafka-storage.sh format --standalone -t $$(./bin/kafka-storage.sh random-uuid) -c ./config/server.properties && ./bin/kafka-server-start.sh ./config/server.properties --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override num.partitions=$${KAFKA_NUM_PARTITIONS} --override group.min.session.timeout.ms=$${KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS}"
+    ]
+    ports:
+      - "9092:9092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_GROUP_MIN_SESSION_TIMEOUT_MS: 100
+    networks:
+      - kafkastreams-network
+
+  producer:
+    image: quarkus-quickstarts/kafka-streams-producer:1.0
+    build:
+      context: producer
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - kafkastreams-network
+
+  aggregator:
+    image: quarkus-quickstarts/kafka-streams-aggregator:1.0
+    build:
+      context: aggregator
+      dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
+    environment:
+      QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - kafkastreams-network
+
+networks:
+  kafkastreams-network:
+    name: ks

@@ -87,13 +87,19 @@ templates/
     └── api-testing/                   ← Tests de APIs con Karate framework
 
 ├── quarkus/                           ← Plantillas Quarkus
-│   └── rest-api/                      ← API REST con Quarkus (RESTEasy Reactive)
+│   ├── rest-api/                      ← API REST con Quarkus (RESTEasy Reactive)
+│   └── quarkus-quickstarts/           ← Colección oficial Quarkus (100+ quickstarts)
+│       ├── getting-started/           ← Introducción a Quarkus
+│       ├── hibernate-orm-quickstart/  ← Hibernate ORM
+│       ├── kafka-quickstart/          ← Kafka Messaging
+│       ├── security-openid-connect/   ← Seguridad OIDC
+│       └── ... (100+ quickstarts)     ← Ver README.md para lista completa
 
 ├── spring-boot/                       ← Plantillas Spring Boot
 │   └── rest-api/                      ← API REST con Spring Boot 3.x
 
-└── python/                            ← Plantillas Python
-    └── fastapi-rest/                  ← API REST con FastAPI + Pydantic
+├── python/                            ← Plantillas Python
+│   └── fastapi-rest/                  ← API REST con FastAPI + Pydantic
 
 ├── openshift/                         ← Plantillas OpenShift (OCP)
 │   └── quickstart/                    ← Quickstart: BuildConfig + Deploy + Route
@@ -106,6 +112,17 @@ templates/
 │           ├── deployment.yaml        ← Deployment con health checks
 │           ├── service.yaml           ← ClusterIP Service
 │           └── route.yaml             ← Route TLS edge
+
+└── awesome-compose/                   ← Colección Docker Compose (40+ ejemplos)
+    ├── angular/                       ← Angular + Nginx
+    ├── django/                        ← Django + PostgreSQL
+    ├── flask/                         ← Flask
+    ├── fastapi/                       ← FastAPI
+    ├── react-express-mongodb/         ← React + Express + MongoDB
+    ├── spring-postgres/               ← Spring Boot + PostgreSQL
+    ├── prometheus-grafana/            ← Prometheus + Grafana
+    ├── wordpress-mysql/               ← WordPress + MySQL
+    └── ... (40+ stacks más)           ← Ver README.md para lista completa
 ```
 
 ## Cómo usar una plantilla

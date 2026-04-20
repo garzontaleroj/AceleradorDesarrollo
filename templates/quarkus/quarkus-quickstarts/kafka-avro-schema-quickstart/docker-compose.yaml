@@ -1,0 +1,21 @@
+services:
+
+  kafka:
+    image: quay.io/strimzi/kafka:latest-kafka-4.1.0
+    command: [
+      "sh", "-c",
+      "rm -rf /tmp/kraft-combined-logs/* && ./bin/kafka-storage.sh format --standalone -t $$(./bin/kafka-storage.sh random-uuid) -c ./config/server.properties && ./bin/kafka-server-start.sh ./config/server.properties"
+    ]
+    ports:
+      - "9092:9092"
+    environment:
+      LOG_DIR: "/tmp/logs"
+
+  schema-registry:
+    image: apicurio/apicurio-registry-mem:2.6.13.Final
+    ports:
+      - 8081:8080
+    depends_on:
+      - kafka
+    environment:
+      QUARKUS_PROFILE: prod

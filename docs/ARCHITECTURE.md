@@ -65,7 +65,12 @@ AceleradorDesarrollo/
 │   ├── api-manager/             ← Definiciones OpenAPI, políticas
 │   ├── identity-server/         ← SPs, IdPs, auth adaptiva
 │   ├── streaming-integrator/    ← Event processing (Kafka, CDC)
-│   └── ballerina/               ← Servicios HTTP
+│   ├── ballerina/               ← Servicios HTTP
+│   ├── quarkus/                 ← REST API + Quickstarts (100+ ejemplos)
+│   ├── spring-boot/             ← REST API
+│   ├── python/                  ← FastAPI REST
+│   ├── openshift/               ← Quickstart OCP
+│   └── awesome-compose/         ← 40+ stacks Docker Compose
 │
 ├── infrastructure/              ← Infraestructura como código
 │   ├── docker/                  ← Dockerfiles por producto
@@ -181,10 +186,11 @@ El archivo `templates/catalog.yaml` sirve como índice central con metadatos de 
 | Ballerina | 1 | HTTP Service |
 | OpenChoreo | 1 | Platform Setup |
 | Karate | 1 | API Testing |
-| Quarkus | 1 | REST API |
+| Quarkus | 2 | REST API, Quickstarts (100+ ejemplos oficiales) |
 | Spring Boot | 1 | REST API |
 | Python | 1 | FastAPI REST |
 | OpenShift (OCP) | 1 | Quickstart (BuildConfig + Deploy + Route) |
+| Docker Compose | 1 | Awesome Compose (40+ stacks multi-servicio) |
 
 Las plantillas incluyen artefactos listos para copiar, archivos README con instrucciones
 paso a paso, y guías de personalización. Ver [templates/README.md](../templates/README.md).
