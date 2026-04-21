@@ -11,8 +11,11 @@ Simula la infraestructura de **AXA Colpatria TSTF** (`TSTF.AXACOLPATRIA.CO`).
 |---|-----------|-------------------|--------------|---------------|
 | 1 | **OpenLDAP** (simple) | `osixia/openldap` + phpLDAPAdmin | `docker-compose.yml` | [docs/SCENARIO-LDAP.md](docs/SCENARIO-LDAP.md) |
 | 2 | **Active Directory** (Samba AD DC) | Samba 4 Domain Controller | `docker-compose-ad.yml` | [docs/SCENARIO-AD.md](docs/SCENARIO-AD.md) |
+| 3 | **Active Directory externo por NAT** (coexistencia TST + PRIMARY) | AD externo publicado por NAT | N/A | [docs/SCENARIO-AD-EXTERNAL-NAT.md](docs/SCENARIO-AD-EXTERNAL-NAT.md) |
 
 Ambos escenarios comparten el archivo `deployment.toml` (configuración base de WSO2 IS).
+
+Para el escenario con AD externo por NAT (sin Docker AD), consultar la guía de coexistencia: [docs/SCENARIO-AD-EXTERNAL-NAT.md](docs/SCENARIO-AD-EXTERNAL-NAT.md).
 
 ---
 

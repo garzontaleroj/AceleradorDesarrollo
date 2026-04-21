@@ -1,0 +1,182 @@
+# ============================================================================================
+# seed-ad.ldif — Windows Server Active Directory seed data
+# Dominio: DC=tst,DC=axacolpatria,DC=co
+#
+# Importar con ldifde (sin contraseñas — establecer por PowerShell o seed-ad.ps1):
+#   ldifde -i -f seed-ad.ldif -s 127.0.0.1 -b Administrator tst.axacolpatria.co Medjugorje4Ever*
+#
+# NOTA: Las contraseñas NO se pueden establecer via LDIF en puerto 389 (requiere LDAPS 636).
+#       Usa seed-ad.ps1 para crear usuarios con contraseña desde el propio DC.
+# ============================================================================================
+
+# ----------------------------
+# Organizational Units
+# ----------------------------
+
+dn: OU=Service_accounts,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: Service_accounts
+description: Cuentas de servicio para integraciones
+
+dn: OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: Usuarios
+description: Usuarios del dominio TST
+
+dn: OU=Grupos,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: Grupos
+description: Grupos de seguridad del dominio TST
+
+# ----------------------------
+# Service Account — WSO2 IS
+# ----------------------------
+
+dn: CN=Axaservicewso2Tip,OU=Service_accounts,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Axaservicewso2Tip
+sAMAccountName: Axaservicewso2Tip
+userPrincipalName: Axaservicewso2Tip@tst.axacolpatria.co
+givenName: WSO2
+sn: ServiceAccount
+displayName: WSO2 ServiceAccount
+description: Cuenta de servicio para WSO2 Identity Server
+company: AXA Colpatria
+department: Tecnologia
+mail: axaservicewso2tip@axacolpatria.co
+userAccountControl: 66048
+# userAccountControl: 66048 = NORMAL_ACCOUNT (512) + DONT_EXPIRE_PASSWORD (65536)
+
+# ----------------------------
+# Users — OU=Usuarios
+# ----------------------------
+
+dn: CN=Juan Perez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Juan Perez
+sAMAccountName: jperez
+userPrincipalName: jperez@tst.axacolpatria.co
+givenName: Juan
+sn: Perez
+displayName: Juan Perez
+mail: jperez@axacolpatria.co
+company: AXA Colpatria
+department: Tecnologia
+employeeID: 89d7666b-9e43-49fb-99a2-9580bed45ddb
+userAccountControl: 512
+
+dn: CN=Maria Garcia,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Maria Garcia
+sAMAccountName: mgarcia
+userPrincipalName: mgarcia@tst.axacolpatria.co
+givenName: Maria
+sn: Garcia
+displayName: Maria Garcia
+mail: mgarcia@axacolpatria.co
+company: AXA Colpatria
+department: Operaciones
+employeeID: 522f3448-32a8-4db3-943c-ebd2b64d637b
+userAccountControl: 512
+
+dn: CN=Carlos Lopez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Carlos Lopez
+sAMAccountName: clopez
+userPrincipalName: clopez@tst.axacolpatria.co
+givenName: Carlos
+sn: Lopez
+displayName: Carlos Lopez
+mail: clopez@axacolpatria.co
+company: AXA Colpatria
+department: Desarrollo
+employeeID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+userAccountControl: 512
+
+dn: CN=Ana Rivera,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Ana Rivera
+sAMAccountName: arivera
+userPrincipalName: arivera@tst.axacolpatria.co
+givenName: Ana
+sn: Rivera
+displayName: Ana Rivera
+mail: arivera@axacolpatria.co
+company: AXA Colpatria
+department: Soporte
+employeeID: b2c3d4e5-f6a7-8901-bcde-f12345678901
+userAccountControl: 512
+
+# ----------------------------
+# Security Groups — OU=Grupos
+# ----------------------------
+
+dn: CN=developers,OU=Grupos,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: group
+cn: developers
+sAMAccountName: developers
+description: Grupo de desarrolladores
+groupType: -2147483646
+# groupType: -2147483646 = Global Security Group
+member: CN=Juan Perez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+member: CN=Carlos Lopez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+
+dn: CN=admins,OU=Grupos,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: group
+cn: admins
+sAMAccountName: admins
+description: Grupo de administradores
+groupType: -2147483646
+member: CN=Juan Perez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+
+dn: CN=operaciones,OU=Grupos,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: group
+cn: operaciones
+sAMAccountName: operaciones
+description: Grupo de operaciones
+groupType: -2147483646
+member: CN=Maria Garcia,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+member: CN=Ana Rivera,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+
+dn: CN=soporte,OU=Grupos,DC=tst,DC=axacolpatria,DC=co
+changetype: add
+objectClass: top
+objectClass: group
+cn: soporte
+sAMAccountName: soporte
+description: Grupo de soporte tecnico
+groupType: -2147483646
+member: CN=Ana Rivera,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
+member: CN=Carlos Lopez,OU=Usuarios,DC=tst,DC=axacolpatria,DC=co
