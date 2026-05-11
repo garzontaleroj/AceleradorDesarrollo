@@ -1,0 +1,69 @@
+<!-- Plantilla: Data Service Base para WSO2 Micro Integrator
+
+    Variables a reemplazar:
+        {{NAME}} - Nombre del DataService (ej: DataServiceClientes)
+        {{DATABASE_DRIVERCLASSNAME}} - Driver JDBC (ej: org.postgresql.Driver)
+        {{DATABASE_URL}} - URL conexión BD (ej: jdbc:postgresql://localhost:5432/database)
+        {{DATABASE_USER}} - Usuario conexión BD (ej: userpostgres)
+        {{DATABASE_PASSWORD}} - Contraseña conexión BD (ej: postgres)
+        {{ID}} - Identificador del datasource (ej: clientDs)
+-->
+
+<data name="{{NAME}}" serviceNamespace="" serviceGroup="" transports="http https">
+    <description/>
+    <!-- ======== Configuracion  DataService ======== -->
+    <config id="{{ID}}">
+        <property name="driverClassName">{{DATABASE_DRIVERCLASSNAME}}</property>
+		<property name="url">{{DATABASE_URL}}</property>
+		<property name="username">{{DATABASE_USER}}</property>
+		<property name="password">{{DATABASE_PASSWORD}}</property>
+    </config>
+    <!-- ======== Query Base ======== 
+        Reemplazar:
+            - Nombre query {{NAMEQUERY}}
+            - Tabla
+            - SQL
+            - Parametros
+            - Response mapping
+    -->
+    <query id="{{NAMEQUERY}}" useConfig="{{ID}}">
+        <sql>
+            SELECT
+                campo1,
+                campo2
+            FROM nombre_tabla
+            WHERE campo1 = :parametro
+        </sql>
+        <!-- PARAMETROS -->
+        <param name="parametro" sqlType="INTEGER"/>
+        <!-- RESPONSE MAPPING -->
+        <result element="Response" rowName="Item">
+            <element name="campo1" column="campo1" xsdType="integer"/>
+            <element name="campo2" column="campo2" xsdType="string"/>
+        </result>
+    </query>
+    <!-- ========  Resource / Operation ========  
+        Reemplazar:
+        - Nombre operacion - {{NAMEOPERATION}}
+        - Nombre query - Es el mismo {{NAMEQUERY}}
+        - Parametros - Debe ser los mismo nombramientos del query
+    -->
+    <operation name="{{NAMEOPERATION}}">
+        <call-query href="{{NAMEQUERY}}">
+            <with-param name="parametro" query-param="parametro"/>
+        </call-query>
+    </operation>
+
+    <!-- Opcional Resource
+        Se debe utilizar únicamente uno:
+        - operation (SOAP)
+        - resource (REST)
+        Dependiendo del tipo de exposición requerida. 
+
+    <resource method="GET" path="/data/{id}">
+        <call-query href="{{NAMEQUERY}}">
+            <with-param name="parametro" query-param="parametro"/>
+        </call-query>
+    </resource>
+    -->
+</data>
