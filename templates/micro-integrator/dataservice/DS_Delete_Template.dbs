@@ -1,0 +1,26 @@
+<!-- ==== DELETE TEMPLATE ==== -->
+
+<query id="{{QUERY_NAME}}" useConfig="{{DATASOURCE_ID}}">
+    <sql>
+        DELETE FROM nombre_tabla
+        WHERE id = :id
+    </sql>
+    <!-- PARAMETROS -->
+    <param name="id" sqlType="INTEGER"/>
+</query>
+
+<!-- SOAP -->
+<operation name="{{OPERATION_NAME}}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</operation>
+
+<!-- REST OPCIONAL -->
+<!--
+<resource method="DELETE" path="/resource/{id}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</resource>
+-->

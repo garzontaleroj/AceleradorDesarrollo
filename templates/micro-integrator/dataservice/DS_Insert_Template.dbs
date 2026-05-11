@@ -1,0 +1,36 @@
+<!-- ==== INSERT TEMPLATE ==== -->
+
+<query id="{{QUERY_NAME}}" useConfig="{{DATASOURCE_ID}}">
+    <sql>
+        INSERT INTO nombre_tabla (
+            campo1,
+            campo2
+        )
+        VALUES (
+            :campo1,
+            :campo2
+        )
+    </sql>
+    <!-- PARAMETROS -->
+    <param name="campo1" sqlType="STRING"/>
+    <param name="campo2" sqlType="STRING"/>
+</query>
+
+<!-- SOAP -->
+<operation name="{{OPERATION_NAME}}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="campo1" query-param="campo1"/>
+        <with-param name="campo2" query-param="campo2"/>
+    </call-query>
+
+</operation>
+
+<!-- REST OPCIONAL -->
+<!--
+<resource method="POST" path="/resource">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="campo1" query-param="campo1"/>
+        <with-param name="campo2" query-param="campo2"/>
+    </call-query>
+</resource>
+-->

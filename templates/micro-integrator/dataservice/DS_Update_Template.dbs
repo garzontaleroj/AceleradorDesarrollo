@@ -1,0 +1,36 @@
+<!-- ==== UPDATE TEMPLATE ==== -->
+
+<query id="{{QUERY_NAME}}" useConfig="{{DATASOURCE_ID}}">
+    <sql>
+        UPDATE nombre_tabla
+        SET
+            campo1 = :campo1,
+            campo2 = :campo2
+        WHERE id = :id
+    </sql>
+
+    <!-- PARAMETROS -->
+    <param name="campo1" sqlType="STRING"/>
+    <param name="campo2" sqlType="STRING"/>
+    <param name="id" sqlType="INTEGER"/>
+</query>
+
+<!-- SOAP -->
+<operation name="{{OPERATION_NAME}}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="campo1" query-param="campo1"/>
+        <with-param name="campo2" query-param="campo2"/>
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</operation>
+
+<!-- REST OPCIONAL -->
+<!--
+<resource method="PUT" path="/resource/{id}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="campo1" query-param="campo1"/>
+        <with-param name="campo2" query-param="campo2"/>
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</resource>
+-->

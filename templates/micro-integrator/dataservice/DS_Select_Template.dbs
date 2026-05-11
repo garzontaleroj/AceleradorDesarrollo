@@ -1,0 +1,35 @@
+<!-- === SELECT TEMPLATE ==== -->
+
+<query id="{{QUERY_NAME}}" useConfig="{{DATASOURCE_ID}}">
+    <sql>
+        SELECT
+            campo1,
+            campo2
+        FROM nombre_tabla
+        WHERE id = :id
+    </sql>
+    <!-- PARAMETROS -->
+    <param name="id" sqlType="INTEGER"/>
+
+    <!-- RESPONSE -->
+    <result element="Response" rowName="Item">
+        <element name="campo1" column="campo1" xsdType="string"/> 
+        <element name="campo2" column="campo2" xsdType="string"/>
+    </result>
+</query>
+
+<!-- SOAP -->
+<operation name="{{OPERATION_NAME}}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</operation>
+
+<!-- REST OPCIONAL -->
+<!--
+<resource method="GET" path="/resource/{id}">
+    <call-query href="{{QUERY_NAME}}">
+        <with-param name="id" query-param="id"/>
+    </call-query>
+</resource>
+-->
